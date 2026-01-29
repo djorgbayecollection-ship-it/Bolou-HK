@@ -4,10 +4,9 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import * as XLSX from "xlsx";
 import { 
-  MessageSquare, Loader2, ArrowUpRight, Clock, Mail, 
-  Download, Target, TrendingUp, Utensils, Plane, 
-  MonitorSmartphone, GraduationCap, Layout, Star,
-  Ship, Eye, Users // Ajout des icônes pour les stats visiteurs
+  MessageSquare, Loader2, ArrowUpRight, Clock, 
+  Download, TrendingUp, Utensils, Plane, 
+  MonitorSmartphone, Ship, Eye, Users 
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -22,7 +21,7 @@ export default function AdminDashboard() {
     ads: 0,
     traiteur: 0,
     quotes: 0,
-    visits: 0, // NOUVEAU : Statistiques de visites
+    visits: 0,
   });
   const [recentBookings, setRecentBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default function AdminDashboard() {
           adSnap, 
           traiteurSnap,
           quoteSnap,
-          visitSnap // Récupération des visites
+          visitSnap 
         ] = await Promise.all([
           getDocs(collection(db, "leads")),
           getDocs(collection(db, "voyages")),
@@ -49,7 +48,7 @@ export default function AdminDashboard() {
           getDocs(collection(db, "ads")),
           getDocs(collection(db, "traiteur")),
           getDocs(collection(db, "quotes")),
-          getDocs(collection(db, "visits")) // Nouvelle collection pour les stats
+          getDocs(collection(db, "visits"))
         ]);
 
         const allLeads = [
@@ -66,7 +65,7 @@ export default function AdminDashboard() {
           ads: adSnap.size,
           traiteur: traiteurSnap.size,
           quotes: quoteSnap.size,
-          visits: visitSnap.size // Mise à jour du compteur
+          visits: visitSnap.size
         });
 
         const sortedLeads = allLeads.sort((a: any, b: any) => {
@@ -90,16 +89,17 @@ export default function AdminDashboard() {
   const exportToExcel = () => {
     const dataToExport = recentBookings.map(book => ({
       Date: book.createdAt?.toDate ? book.createdAt.toDate().toLocaleString() : "N/A",
-      Client: book.clientName || book.name,
-      Service: book.isQuote ? `Logistique (${book.type})` : (book.service || book.interest),
-      Contact: book.whatsapp || book.phone,
+      Client: book.clientName || book.name || "Inconnu",
+      Service: book.isQuote ? `Logistique (${book.type || 'Standard'})` : (book.service || book.interest || "Non spécifié"),
+      Contact: book.whatsapp || book.phone || "N/A",
       Message: book.message || "Aucun message",
       Statut: book.status || "Nouveau"
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
-    X.utils.book_append_sheet(workbook, worksheet, "Reporting BOLOU-HK");
+    // CORRECTION ICI : Remplacement de X par XLSX
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Reporting BOLOU-HK");
     XLSX.writeFile(workbook, `Reporting_BHK_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
@@ -114,7 +114,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-10 p-4">
-      {/* HEADER */}
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -131,7 +130,6 @@ export default function AdminDashboard() {
         </button>
       </header>
 
-      {/* STATS PRINCIPALES */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard icon={<Eye size={22} />} label="Audience Web" value={stats.visits} trend="Visiteurs uniques" color="bg-indigo-600" link="/admin/stats" />
         <StatCard icon={<Ship size={22} />} label="Import-Export" value={stats.quotes} trend="Devis logistiques" color="bg-blue-600" link="/admin/import-export" />
@@ -140,7 +138,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* FLUX ENTRANTS */}
         <div className="lg:col-span-2 bg-white rounded-[4rem] p-10 shadow-sm border border-slate-100">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-2xl font-black uppercase italic flex items-center gap-3 text-slate-900">
@@ -157,9 +154,9 @@ export default function AdminDashboard() {
                       {getDynamicIcon(book.isQuote ? "logistique" : (book.service || book.interest))}
                     </div>
                     <div>
-                      <p className="font-black text-slate-900 uppercase text-sm leading-none">{book.clientName || book.name}</p>
+                      <p className="font-black text-slate-900 uppercase text-sm leading-none">{book.clientName || book.name || "Client Inconnu"}</p>
                       <p className="text-[9px] text-orange-500 font-black uppercase mt-2 tracking-widest">
-                        {book.isQuote ? `Devis ${book.type}` : (book.service || book.interest)}
+                        {book.isQuote ? `Devis ${book.type || ''}` : (book.service || book.interest || "Service")}
                       </p>
                     </div>
                   </div>
@@ -175,9 +172,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ACTIONS RAPIDES & TRACKING */}
         <div className="space-y-8">
-          {/* NOUVEAU BLOC : ACCÈS STATS */}
           <div className="bg-indigo-900 rounded-[3.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
              <div className="relative z-10">
                <div className="flex items-center gap-3 mb-4">

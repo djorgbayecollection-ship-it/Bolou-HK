@@ -6,7 +6,8 @@ import { X, Send, Package, ArrowRightLeft, Scale, CheckCircle } from "lucide-rea
 import { db } from "@/lib/firebase"; 
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+// RENOMMAGE : onClose devient onCloseAction pour satisfaire les contraintes de Next.js
+export default function QuoteModal({ isOpen, onCloseAction }: { isOpen: boolean; onCloseAction: () => void }) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -25,14 +26,14 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean; onClo
         product: formData.get("product"),
         weight: formData.get("weight"),
         message: formData.get("message"),
-        status: "en_attente", // Pour filtrer dans ton admin
-        createdAt: serverTimestamp(), // Heure précise du serveur Firebase
+        status: "en_attente", 
+        createdAt: serverTimestamp(), 
       });
 
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
-        onClose();
+        onCloseAction(); // Utilisation du nouveau nom
       }, 3000);
     } catch (error) {
       console.error("Erreur Firebase:", error);
@@ -55,7 +56,7 @@ export default function QuoteModal({ isOpen, onClose }: { isOpen: boolean; onClo
         >
           {/* Header */}
           <div className="bg-blue-600 p-8 text-white relative">
-            <button onClick={onClose} className="absolute top-6 right-6 hover:rotate-90 transition-transform">
+            <button onClick={onCloseAction} className="absolute top-6 right-6 hover:rotate-90 transition-transform">
               <X size={24} />
             </button>
             <h3 className="text-3xl font-black uppercase italic tracking-tighter">
