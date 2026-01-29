@@ -100,7 +100,7 @@ export default function AssistancePage() {
               </div>
 
               <div className="w-20 h-20 bg-slate-900 text-white rounded-3xl flex items-center justify-center mb-10 group-hover:bg-orange-500 transition-colors duration-500">
-                {React.cloneElement(item.icon as React.ReactElement, { size: 32, className: "text-white" })}
+                {React.cloneElement(item.icon as React.ReactElement<any>, { size: 32, className: "text-white" })}
               </div>
               
               <h3 className="text-3xl font-black uppercase italic text-slate-900 mb-6">{item.title}</h3>
