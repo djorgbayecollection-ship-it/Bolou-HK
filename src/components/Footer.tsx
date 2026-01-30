@@ -72,9 +72,9 @@ export default function Footer() {
               L'excellence multi-services. Tech, logistique et service premium.
             </p>
             <div className="flex gap-3">
-              <SocialIcon icon={<Instagram size={18} />} href="#" />
-              <SocialIcon icon={<Facebook size={18} />} href="#" />
-              <SocialIcon icon={<Linkedin size={18} />} href="#" />
+              <SocialIcon icon={<Instagram size={18} />} href="https://www.instagram.com/bhk_voyages/" />
+              <SocialIcon icon={<Facebook size={18} />} href="https://www.facebook.com/profile.php?id=61587018501632" />
+              <SocialIcon icon={<Linkedin size={18} />} href="https://www.linkedin.com/in/amos-de-vincy-tene-42a5683a9/" />
             </div>
           </div>
 

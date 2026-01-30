@@ -26,7 +26,7 @@ const services = [
     bg: "bg-white border border-slate-100",
     textColor: "text-slate-900",
     img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200",
-    link: "/digital"
+    link: "/services/digital"
   },
   {
     title: "Assurances",
@@ -66,7 +66,7 @@ const services = [
     bg: "bg-gradient-to-r from-orange-500 to-orange-600",
     textColor: "text-white",
     img: "https://res.cloudinary.com/dkjqh8snc/image/upload/v1769222491/What_Brands_Love_About_Working_With_Affiliate_Creators_chflnd.jpg",
-    link: "/formation"
+    link: "/services/formation"
   }
 ];
 

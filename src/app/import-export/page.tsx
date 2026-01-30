@@ -28,6 +28,8 @@ const QuoteModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
           <select className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none">
             <option>Import Chine → Abidjan</option>
             <option>Export Abidjan → Paris</option>
+            <option>Import Dubaï → Abidjan</option>
+            <option>Export Abidjan → Dubaï</option>
             <option>Envoi Express (DHL/FedEx)</option>
           </select>
           <div className="grid grid-cols-2 gap-4">
@@ -52,7 +54,7 @@ const ROUTES = [
     icon: <Plane size={24} />,
     color: "bg-orange-500",
     badge: "Groupage Hebdomadaire",
-    intro: "Vols directs pour vos marchandises urgentes et colis personnels.",
+    intro: "Express plis et colis",
     details: [
       { label: "Transit", val: "6 Heures", icon: <Clock size={16} /> },
       { label: "Dédouanement", val: "Inclus", icon: <Zap size={16} /> },
@@ -65,9 +67,22 @@ const ROUTES = [
     icon: <Globe2 size={24} />,
     color: "bg-blue-600",
     badge: "Sourcing & Transit",
-    intro: "Importation sécurisée depuis Canton, Yiwu et Shanghai.",
+    intro: "Importation sécurisée depuis Canton, Yiwu et Shanghai etc...",
     details: [
       { label: "Modes", val: "Air & Mer", icon: <Ship size={16} /> },
+      { label: "Sourcing", val: "Accompagnement", icon: <TrendingUp size={16} /> },
+      { label: "Sécurité", val: "100% Garanti", icon: <ShieldCheck size={16} /> }
+    ],
+  },
+  {
+    id: "Dubaï",
+    title: "Dubaï ↔ Abidjan",
+    icon: <Globe2 size={24} />,
+    color: "bg-blue-600",
+    badge: "Global Trade Hub",
+    intro: "Dubaï comme porte d’entrée internationale, Abidjan comme destination finale. Nous sécurisons chaque étape de votre importation.",
+    details: [
+      { label: "Modes", val: "Avion & Bateau", icon: <Ship size={16} /> },
       { label: "Sourcing", val: "Accompagnement", icon: <TrendingUp size={16} /> },
       { label: "Sécurité", val: "100% Garanti", icon: <ShieldCheck size={16} /> }
     ],
@@ -94,7 +109,7 @@ export default function ImportExportPage() {
               BOLOU-HK <br /> <span className="text-blue-500">GROUPE.</span>
             </h1>
             <p className="text-slate-400 mt-8 text-lg italic font-medium max-w-xl leading-relaxed">
-              Simplifiez vos échanges internationaux. Nous gérons le transport de vos marchandises entre la <span className="text-white">Chine, Abidjan et Paris</span> avec une rigueur absolue.
+              Simplifiez vos échanges internationaux. Nous gérons le transport de vos marchandises entre la <span className="text-white">Chine, Abidjan, Dubai et Paris</span> avec une rigueur absolue.
             </p>
           </motion.div>
 
@@ -161,14 +176,14 @@ export default function ImportExportPage() {
                         <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0"><Utensils size={18} className="text-orange-500"/></div>
                         <div>
                             <p className="font-black italic uppercase text-sm">Fret Alimentaire</p>
-                            <p className="text-xs text-slate-400 italic mt-1">Exportation sécurisée de vos denrées vers l'international.</p>
+                            <p className="text-xs text-slate-400 italic mt-1">denré alimentaire et divers</p>
                         </div>
                     </div>
                     <div className="flex gap-4">
                         <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0"><Ship size={18} className="text-blue-400"/></div>
                         <div>
                             <p className="font-black italic uppercase text-sm">Sourcing International</p>
-                            <p className="text-xs text-slate-400 italic mt-1">Achat et inspection de marchandises en usine (Chine/Turquie).</p>
+                            <p className="text-xs text-slate-400 italic mt-1">Achat et transport de marchandises depuis (Chine/Turquie/dubai/paris).</p>
                         </div>
                     </div>
                   </div>
