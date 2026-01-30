@@ -28,12 +28,14 @@ export default function Navbar() {
   const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false);
   const pathname = usePathname();
 
+  // Fermer le menu au changement de page
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsMobileServicesOpen(false);
     document.body.style.overflow = "unset";
   }, [pathname]);
 
+  // Bloquer le scroll quand le menu est ouvert
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -43,89 +45,91 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="fixed top-0 w-full z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
-        
-        {/* LOGO */}
-        <Link href="/" className="relative flex items-center hover:opacity-90 transition-opacity">
-          <div className="relative w-40 h-10 md:w-52 md:h-14"> 
-            <Image 
-              src="/logo.png" 
-              alt="BOLOU-HK GROUPE" 
-              fill
-              className="object-contain object-left"
-              priority
-            />
-          </div>
-        </Link>
-
-        {/* LINKS DESKTOP - Taille de police augmentée à 14px (text-sm) */}
-        <div className="hidden xl:flex items-center gap-6">
-          <NavLink href="/">Accueil</NavLink>
-          <NavLink href="/apropos">À Propos</NavLink>
-          <NavLink href="/voyages">Voyages</NavLink>
-          <NavLink href="/assurances">Assurances</NavLink>
-          <NavLink href="/traiteur">Traiteur</NavLink>
-          <NavLink href="/import-export">Import-Export</NavLink>
-          <NavLink href="/blog">Blog</NavLink>
+    <>
+      <nav className="fixed top-0 w-full z-[120] bg-white/95 backdrop-blur-xl border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
           
-          <div 
-            className="relative"
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <button className="flex items-center gap-1 font-bold text-slate-700 hover:text-brand-blue transition-colors py-8 text-sm uppercase tracking-wide">
-              Services + <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-              {isDropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-[85%] right-0 w-72 bg-white shadow-2xl rounded-3xl border border-slate-100 p-4"
-                >
-                  <div className="grid gap-2">
-                    {otherServices.map((service) => (
-                      <Link
-                        key={service.name}
-                        href={service.href}
-                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-700 hover:text-brand-blue font-bold transition-all group"
-                      >
-                        <span className="p-2 bg-slate-100 rounded-xl group-hover:bg-brand-blue group-hover:text-white transition-all">
-                          {service.icon}
-                        </span>
-                        {service.name}
-                      </Link>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* ACTIONS & BURGER */}
-        <div className="flex items-center gap-4">
-          <Link 
-            href="/contact"
-            className="hidden lg:flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-orange hover:-translate-y-0.5 transition-all text-sm uppercase"
-          >
-            <Phone size={16} />
-            <span>Contact</span>
+          {/* LOGO */}
+          <Link href="/" className="relative flex items-center hover:opacity-90 transition-opacity">
+            <div className="relative w-40 h-10 md:w-52 md:h-14"> 
+              <Image 
+                src="/logo.png" 
+                alt="BOLOU-HK GROUPE" 
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
           </Link>
-          
-          <button 
-            className="xl:hidden p-2 text-brand-blue bg-slate-50 rounded-xl active:scale-95 transition-transform"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
-          </button>
-        </div>
-      </div>
 
-      {/* MOBILE MENU */}
+          {/* LINKS DESKTOP - Taille de police maintenue */}
+          <div className="hidden xl:flex items-center gap-6">
+            <NavLink href="/">Accueil</NavLink>
+            <NavLink href="/apropos">À Propos</NavLink>
+            <NavLink href="/voyages">Voyages</NavLink>
+            <NavLink href="/assurances">Assurances</NavLink>
+            <NavLink href="/traiteur">Traiteur</NavLink>
+            <NavLink href="/import-export">Import-Export</NavLink>
+            <NavLink href="/blog">Blog</NavLink>
+            
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <button className="flex items-center gap-1 font-bold text-slate-700 hover:text-brand-blue transition-colors py-8 text-sm uppercase tracking-wide">
+                Services + <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-[85%] right-0 w-72 bg-white shadow-2xl rounded-3xl border border-slate-100 p-4"
+                  >
+                    <div className="grid gap-2">
+                      {otherServices.map((service) => (
+                        <Link
+                          key={service.name}
+                          href={service.href}
+                          className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-700 hover:text-brand-blue font-bold transition-all group"
+                        >
+                          <span className="p-2 bg-slate-100 rounded-xl group-hover:bg-brand-blue group-hover:text-white transition-all">
+                            {service.icon}
+                          </span>
+                          {service.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* ACTIONS & BURGER BUTTON */}
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/contact"
+              className="hidden lg:flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-orange hover:-translate-y-0.5 transition-all text-sm uppercase"
+            >
+              <Phone size={16} />
+              <span>Contact</span>
+            </Link>
+            
+            <button 
+              className="xl:hidden p-2 text-brand-blue bg-slate-50 rounded-xl active:scale-95 transition-transform z-[130] relative"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE MENU - Corrigé pour s'afficher correctement */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -133,9 +137,9 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 top-20 bg-white z-[90] xl:hidden flex flex-col"
+            className="fixed inset-0 top-0 left-0 w-full h-screen bg-white z-[110] xl:hidden pt-24"
           >
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-2">
+            <div className="h-full overflow-y-auto p-6 flex flex-col gap-2 pb-32">
               <MobileNavLink href="/">Accueil</MobileNavLink>
               <MobileNavLink href="/apropos">À Propos</MobileNavLink>
               <MobileNavLink href="/voyages">Voyages</MobileNavLink>
@@ -183,7 +187,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }
 

@@ -15,14 +15,21 @@ import Testimonials from "@/components/layout/Testimonials";
 import { useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import CookieBanner from "@/components/ui/CookieBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 function VisitorTracker() {
   const pathname = usePathname();
+
   useEffect(() => {
     const trackVisit = async () => {
+      // MISE À JOUR : Vérification du consentement avant collecte
+      const consent = localStorage.getItem("cookie_consent");
+      if (consent !== "accepted") return;
+
       if (pathname?.startsWith("/admin") || pathname?.startsWith("/login")) return;
+      
       const hasVisited = sessionStorage.getItem("bolou_tracked");
       if (!hasVisited) {
         try {
@@ -42,6 +49,7 @@ function VisitorTracker() {
     };
     trackVisit();
   }, [pathname]);
+
   return null;
 }
 
@@ -51,13 +59,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="fr" className="scroll-smooth">
-      {/* On retire h-full ici pour laisser le contenu respirer */}
       <body className={`${inter.className} antialiased bg-white selection:bg-orange-500 selection:text-white min-h-screen flex flex-col`}>
         <ServiceProvider>
           <VisitorTracker />
           {!isAdminPage && <AnimatedBackground />}
           
-          {/* Conteneur principal avec gestion du overflow intelligente */}
           <div className="relative flex flex-col flex-1 w-full overflow-x-hidden">
             {!isAdminPage && <Navbar />}
             
@@ -84,6 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </>
           )}
         </ServiceProvider>
+        <CookieBanner />
       </body>
     </html>
   );
