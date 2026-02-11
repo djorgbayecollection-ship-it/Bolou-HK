@@ -2,58 +2,72 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { GraduationCap, BookOpen, Users, ArrowRight } from "lucide-react";
+import CountUp from 'react-countup';
 
 const COURS = [
   {
     title: "Santé et Sécurité au Travail",
-    desc: "Maintenir la forme pendant toute l'année et être orienté en cas d'accident ou incident.",
+    desc: "Maintenir une personne en vie en cas d'urgence vitale dépend de la réactivité et du savoir-faire des témoins. À Bolou-HK, nous vous transmettons le savoir-faire.",
     icon: <BookOpen className="text-blue-500" />,
-    duration: "3 Mois" // Ajouté pour corriger l'erreur
+    duration: "3 Mois"
   },
   {
     title: "Informatique",
-    desc: "Maîtrisez les outils bureautiques et les bases du développement numérique.",
+    desc: "L'analphabète est celui qui n'a aucune maîtrise du numérique.",
     icon: <GraduationCap className="text-orange-500" />,
-    duration: "6 Mois" // Ajouté pour corriger l'erreur
+    duration: "6 Mois"
   },
   {
     title: "Marketing et vente",
-    desc: "Formation intensive en service marketing et gestion commerciale.",
+    desc: "La vente est l'oxygène de toute entreprise.",
     icon: <Users className="text-emerald-500" />,
-    duration: "4 Mois" // Ajouté pour corriger l'erreur
+    duration: "4 Mois"
   }
 ];
 
+// --- COMPOSANT HERO AVEC COMPTAGE ---
+function AcademyHero() {
+  return (
+    <section className="pt-32 pb-20 px-6 bg-slate-900 rounded-b-[4rem]">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <span className="px-4 py-2 bg-orange-500/10 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
+            Bolou-HK Academy
+          </span>
+          <h1 className="text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter mt-6 leading-none">
+            Propulsez votre <br /> <span className="text-orange-500">Carrière.</span>
+          </h1>
+          <p className="text-slate-400 mt-6 text-lg italic font-medium max-w-lg">
+            Des formations certifiantes animées par des experts du terrain pour devenir les leaders de demain.
+          </p>
+        </motion.div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 text-center">
+            <p className="text-4xl font-black text-white">
+              <CountUp end={500} duration={3} prefix="+" enableScrollSpy={true} scrollSpyOnce={true} />
+            </p>
+            <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-2">Diplômés</p>
+          </div>
+
+          <div className="bg-orange-500 p-8 rounded-[2.5rem] text-center shadow-xl shadow-orange-500/20">
+            <p className="text-4xl font-black text-white">
+              <CountUp end={95} duration={3} suffix="%" enableScrollSpy={true} scrollSpyOnce={true} />
+            </p>
+            <p className="text-[10px] text-white/80 uppercase font-black tracking-widest mt-2">Insertion</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// --- PAGE PRINCIPALE ---
 export default function FormationPage() {
   return (
     <main className="bg-white min-h-screen">
-      {/* HERO SECTION */}
-      <section className="pt-32 pb-20 px-6 bg-slate-900 rounded-b-[4rem]">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-            <span className="px-4 py-2 bg-orange-500/10 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20">
-              Bolou-HK Academy
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter mt-6 leading-none">
-              Propulsez votre <br /> <span className="text-orange-500">Carrière.</span>
-            </h1>
-            <p className="text-slate-400 mt-6 text-lg italic font-medium max-w-lg">
-              Des formations certifiantes animées par des experts du terrain pour devenir les leaders de demain.
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 text-center">
-              <p className="text-4xl font-black text-white">+500</p>
-              <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Diplômés</p>
-            </div>
-            <div className="bg-orange-500 p-8 rounded-[2.5rem] text-center shadow-xl shadow-orange-500/20">
-              <p className="text-4xl font-black text-white">95%</p>
-              <p className="text-[10px] text-white/80 uppercase font-black tracking-widest">Insertion</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Utilisation du composant Hero définit plus haut */}
+      <AcademyHero />
 
       {/* LISTE DES FORMATIONS */}
       <section className="py-24 px-6 max-w-7xl mx-auto">

@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Code2, Megaphone, Camera, Layout, 
-  Rocket, ChevronRight, ExternalLink, Loader2, X 
+  Rocket, ChevronRight, ExternalLink, X 
 } from "lucide-react";
 import { useServiceModal } from "@/context/ServiceContext";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 const DIGITAL_SERVICES = [
   {
@@ -44,41 +44,91 @@ const DIGITAL_SERVICES = [
   }
 ];
 
+console.log("📁 Fichier DigitalPage chargé");
+
+
 export default function DigitalPage() {
+  console.log("🔥 DigitalPage est monté");
   const { openModal } = useServiceModal();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
-  // RÉCUPÉRATION DU PORTFOLIO DEPUIS FIREBASE
+  // 🔹 Fetch portfolio depuis Firestore sans orderBy (tri côté client)
   useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        const q = query(collection(db, "portfolio"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setProjects(data);
-      } catch (error) {
-        console.error("Erreur portfolio:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPortfolio();
-  }, []);
+  const fetchPortfolio = async () => {
+    console.log("🚀 Début récupération portfolio...");
 
-  // Fonction pour transformer l'URL Cloudinary (Cadrage 800x1000 auto)
-  const getOptimizedUrl = (url: string) => {
-    return url.replace('/upload/', '/upload/c_fill,g_auto,w_800,h_1000,q_auto,f_auto/');
+    try {
+      const snap = await getDocs(collection(db, "portfolio"));
+
+      console.log("📦 Snapshot brut :", snap);
+      console.log("📊 Nombre de documents :", snap.size);
+
+      if (snap.empty) {
+        console.warn("⚠️ La collection portfolio est VIDE !");
+      }
+
+      const data = snap.docs.map(doc => {
+        const rawData = doc.data();
+        console.log("📄 Document brut :", doc.id, rawData);
+
+        let formattedDate = null;
+
+        if (rawData.createdAt?.toDate) {
+          formattedDate = rawData.createdAt.toDate();
+          console.log("🕒 createdAt est un Timestamp :", formattedDate);
+        } else if (rawData.createdAt) {
+          formattedDate = new Date(rawData.createdAt);
+          console.log("🕒 createdAt est une string :", formattedDate);
+        } else {
+          formattedDate = new Date(0);
+          console.warn("⚠️ createdAt manquant !");
+        }
+
+        return {
+          id: doc.id,
+          ...rawData,
+          createdAt: formattedDate
+        };
+      });
+
+      console.log("✅ Données formatées avant tri :", data);
+
+      data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      console.log("🏆 Données après tri :", data);
+
+      setProjects(data);
+
+    } catch (error) {
+      console.error("❌ ERREUR FIRESTORE :", error);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+      console.log("🏁 Fin récupération portfolio");
+    }
   };
 
-  // Fonction pour l'aperçu HD (Lightbox)
+  fetchPortfolio();
+}, []);
+
+  const getOptimizedUrl = (url: string) => {
+    if (!url || typeof url !== 'string') return "";
+    return url.includes('/upload/') 
+      ? url.replace('/upload/', '/upload/c_fill,g_auto,w_800,h_1000,q_auto,f_auto/')
+      : url;
+  };
+
   const getHDUrl = (url: string) => {
-    return url.replace('/upload/', '/upload/q_auto,f_auto,w_1600/');
+    if (!url || typeof url !== 'string') return "";
+    return url.includes('/upload/')
+      ? url.replace('/upload/', '/upload/q_auto,f_auto,w_1600/')
+      : url;
   };
 
   return (
-    <main className="bg-[#020617] min-h-screen text-white overflow-hidden">
+    <main className="bg-[#020617] min-h-screen text-white overflow-x-hidden">
       
       {/* 1. HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center px-6 overflow-hidden">
@@ -124,7 +174,7 @@ export default function DigitalPage() {
               transition={{ delay: idx * 0.1 }}
               className="group p-12 rounded-[4rem] bg-white/5 border border-white/10 hover:border-orange-500/50 transition-all duration-500"
             >
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-10 shadow-xl`}>
+              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-10 shadow-xl text-white`}>
                 {service.icon}
               </div>
               <h3 className="text-4xl font-black uppercase italic mb-4 tracking-tighter">{service.title}</h3>
@@ -140,52 +190,65 @@ export default function DigitalPage() {
         </div>
       </section>
 
-      {/* 3. PORTFOLIO DYNAMIQUE AVEC OPTIMISATION CLOUDINARY */}
+      {/* 3. PORTFOLIO */}
       <section className="py-32 bg-white/5 relative">
         <div className="max-w-7xl mx-auto px-6 mb-16">
-          <h2 className="text-5xl font-black uppercase italic tracking-tighter">Nos <span className="text-orange-500">Réalisations</span></h2>
+          <h2 className="text-5xl font-black uppercase italic tracking-tighter text-white">Nos <span className="text-orange-500">Réalisations</span></h2>
           <p className="text-slate-400 font-medium italic mt-2 text-lg">Le savoir-faire BOLOU-HK en images.</p>
         </div>
 
         <div className="flex overflow-x-auto gap-8 px-6 pb-12 no-scrollbar scroll-smooth">
-          {loading ? (
-            <div className="flex gap-8">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="min-w-[350px] md:min-w-[450px] aspect-[4/5] bg-white/5 animate-pulse rounded-[3rem]" />
-              ))}
-            </div>
-          ) : projects.map((proj) => (
-            <motion.div 
-              key={proj.id}
-              whileHover={{ y: -10 }}
-              onClick={() => setSelectedImg(getHDUrl(proj.imageUrl))}
-              className="min-w-[350px] md:min-w-[450px] aspect-[4/5] relative rounded-[3rem] overflow-hidden group border border-white/5 cursor-zoom-in"
-            >
-              <img 
-                src={getOptimizedUrl(proj.imageUrl)} 
-                alt={proj.title} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-90" />
-              <div className="absolute bottom-10 left-10">
-                <span className="text-orange-500 text-[10px] font-black uppercase tracking-widest bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
-                  {proj.category}
-                </span>
-                <h4 className="text-3xl font-black uppercase italic mt-4">{proj.title}</h4>
-                <div className="mt-4 flex items-center gap-2 text-white/50 text-[10px] font-bold uppercase italic opacity-0 group-hover:opacity-100 transition-opacity">
-                  Agrandir le projet <ExternalLink size={14} />
-                </div>
-              </div>
-            </motion.div>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {loading ? (
+              <motion.div 
+                key="skeleton-group"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex gap-8"
+              >
+                {[1, 2, 3].map((n) => (
+                  <div key={`skeleton-${n}`} className="min-w-[350px] md:min-w-[450px] aspect-[4/5] bg-white/5 animate-pulse rounded-[3rem]" />
+                ))}
+              </motion.div>
+            ) : (
+              projects.map((proj) => (
+                <motion.div 
+                  key={proj.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ y: -10 }}
+                  onClick={() => setSelectedImg(getHDUrl(proj.imageUrl))}
+                  className="min-w-[350px] md:min-w-[450px] aspect-[4/5] relative rounded-[3rem] overflow-hidden group border border-white/5 cursor-zoom-in"
+                >
+                  <img 
+                    src={getOptimizedUrl(proj.imageUrl)} 
+                    alt={proj.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-90" />
+                  <div className="absolute bottom-10 left-10">
+                    <span className="text-orange-500 text-[10px] font-black uppercase tracking-widest bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
+                      {proj.category}
+                    </span>
+                    <h4 className="text-3xl font-black uppercase italic mt-4 text-white">{proj.title}</h4>
+                    <div className="mt-4 flex items-center gap-2 text-white/50 text-[10px] font-bold uppercase italic opacity-0 group-hover:opacity-100 transition-opacity">
+                      Agrandir le projet <ExternalLink size={14} />
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
-      {/* 4. LIGHTBOX (MODE PLEIN ÉCRAN) */}
+      {/* 4. LIGHTBOX */}
       <AnimatePresence>
         {selectedImg && (
           <motion.div 
+            key="lightbox-container"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4 md:p-10 cursor-zoom-out"
             onClick={() => setSelectedImg(null)}
@@ -194,19 +257,20 @@ export default function DigitalPage() {
               <X size={40} />
             </button>
             <motion.img 
-              initial={{ scale: 0.9 }} animate={{ scale: 1 }}
+              key={`img-hd-${selectedImg}`}
+              initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
               src={selectedImg} 
-              className="max-w-full max-h-full rounded-2xl shadow-2xl border border-white/10"
+              className="max-w-full max-h-full rounded-2xl shadow-2xl border border-white/10 object-contain"
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 5. CTA SECTION */}
+      {/* 5. CTA */}
       <section className="py-32 px-6 flex justify-center">
         <div className="relative group cursor-pointer" onClick={() => openModal("DIGITAL-PROJET")}>
           <div className="absolute inset-0 bg-orange-500 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity" />
-          <div className="relative border-2 border-orange-500/50 rounded-[4rem] p-16 text-center backdrop-blur-md">
+          <div className="relative border-2 border-orange-500/50 rounded-[4rem] p-10 md:p-16 text-center backdrop-blur-md">
             <h2 className="text-5xl md:text-7xl font-black uppercase italic leading-none mb-8 text-white">Prêt à coder <br /> le futur ?</h2>
             <div className="flex items-center justify-center gap-4 text-orange-500 font-black uppercase italic tracking-widest">
               Lancer une consultation <Rocket size={24} />

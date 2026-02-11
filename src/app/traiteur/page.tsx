@@ -83,7 +83,7 @@ export default function TraiteurPage() {
               <ChefHat size={14} /> Haute Gastronomie Ivoirienne
             </span>
             <h1 className="text-6xl md:text-8xl font-black text-white italic tracking-tighter leading-none mb-6">
-              L'Art de <br /> <span className="text-orange-500 italic">Bien Recevoir.</span>
+              L'Art de <br /> <span className="text-orange-500 italic">Bien Recevoir à Abidjan et partout ailleurs.</span>
             </h1>
             <p className="text-slate-300 max-w-xl mx-auto text-lg font-medium italic mb-10">
               Des saveurs authentiques et une présentation raffinée pour vos moments d'exception à Abidjan.

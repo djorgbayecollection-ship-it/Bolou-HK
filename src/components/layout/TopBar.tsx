@@ -6,7 +6,7 @@ const MESSAGES = [
   "✈️ Promo Voyage : -15% sur les billets vers Dubaï !",
   "🚀 BHK Digital : Votre site web livré en 7 jours.",
   "📞 Assistance 24h/7j : +225 0574467386",
-  "🎓 Nouvelle formation HK Academy disponible."
+  "🎓 Nouvelle formation BHK Academy disponible."
 ];
 
 export default function TopBar() {

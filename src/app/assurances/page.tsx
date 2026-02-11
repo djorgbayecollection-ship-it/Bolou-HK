@@ -12,8 +12,8 @@ import {
 // Images pour le carousel de fond
 const BG_IMAGES = [
   "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1509017174183-0b7e0278f1ec?auto=format&fit=crop&q=80"
+  "https://res.cloudinary.com/dkjqh8snc/image/upload/v1770803078/As_a_family_owned_and_operated_business_our_goal_is_not_to_overcharge_you_for_a_brand_name__https___www.colorcustoms_edvyw2.jpg",
+  "https://res.cloudinary.com/dkjqh8snc/image/upload/v1770803154/Discover_the_5_crucial_safety_measures_to_tow_y_bp9k1e.jpg"
 ];
 
 // --- CONFIG CLOUDINARY ---
@@ -97,20 +97,21 @@ export default function AssurancePage() {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* HERO SECTION UPDATED */}
+      {/* HERO SECTION UPDATED WITH BETTER BACKGROUND VISIBILITY */}
       <section className="relative pt-32 pb-40 px-6 overflow-hidden min-h-[90vh] flex items-center">
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentBg}
-              initial={{ opacity: 0, scale: 1.1 }}
+              initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.5 }}
               className="absolute inset-0 bg-cover bg-center"
               style={{ backgroundImage: `url(${BG_IMAGES[currentBg]})` }}
             >
-              <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-[2px]" />
+              {/* Overlay réduit à 70% et flou réduit à 1px pour voir les images */}
+              <div className="absolute inset-0 bg-slate-50/70 backdrop-blur-[1px]" />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -125,7 +126,7 @@ export default function AssurancePage() {
               <span className="text-blue-600">GÉREZ TOUT</span> <br />
               <span className="text-slate-900 underline decoration-orange-500 decoration-8 text-6xl lg:text-7xl">EN LIGNE</span>
             </h1>
-            <p className="text-xl text-slate-500 mb-10 max-w-lg font-medium italic">
+            <p className="text-xl text-slate-800 mb-10 max-w-lg font-bold italic drop-shadow-sm">
               Plus besoin de vous déplacer. Obtenez vos cotations d'assurance vie et auto avec un accompagnement d'experts.
             </p>
           </motion.div>
@@ -181,7 +182,7 @@ export default function AssurancePage() {
                 <div>
                   <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mb-6 text-white">{activeForm.icon}</div>
                   <h2 className="text-3xl font-black italic uppercase mb-4">{activeForm.title}</h2>
-                  <p className="text-slate-400 text-sm font-medium italic italic">Cotation rapide et sécurisée BOLOU-HK.</p>
+                  <p className="text-slate-400 text-sm font-medium italic">Cotation rapide et sécurisée BOLOU-HK.</p>
                 </div>
                 <div className="p-4 bg-white/5 border border-white/10 rounded-2xl italic text-sm text-orange-500 font-bold">📞 07 11 81 25 10</div>
               </div>

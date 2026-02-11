@@ -94,9 +94,9 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row gap-10 items-start">
             <p className="max-w-2xl text-base md:text-xl text-slate-500 font-medium leading-relaxed italic">
               Une architecture de services pensée pour l'excellence. Nous fusionnons le 
-              <span className="text-slate-900 font-bold"> Voyages</span>, le 
+              <span className="text-slate-900 font-bold"> Voyage</span>, le 
               <span className="text-slate-900 font-bold"> Digital</span>, l' 
-              <span className="text-slate-900 font-bold"> Assurance</span> et l' 
+              <span className="text-slate-900 font-bold"> Assurance</span> et
               <span className="text-slate-900 font-bold"> Logistique</span>.
             </p>
             

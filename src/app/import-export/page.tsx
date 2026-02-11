@@ -1,46 +1,151 @@
 "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Typewriter from 'typewriter-effect';
+import { db } from "@/lib/firebase"; 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { 
   Plane, Ship, Package, Zap, ChevronRight, 
   Globe2, Clock, ShieldCheck, 
-  Calendar, CheckCircle2, TrendingUp, X, Send, Utensils
+  Calendar, CheckCircle2, TrendingUp, X, Send, Utensils, MapPin
 } from "lucide-react";
 
-// --- COMPOSANT MODAL FORMULAIRE ---
+// --- COMPOSANT MODAL FORMULAIRE AVEC ÉCRAN DE SUCCÈS ---
 const QuoteModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      nom: formData.get("nom"),
+      whatsapp: formData.get("whatsapp"),
+      destination: formData.get("destination"),
+      marchandise: formData.get("marchandise"),
+      poids: formData.get("poids"),
+      details: formData.get("details"),
+      status: "en_attente",
+      createdAt: serverTimestamp(),
+    };
+
+    try {
+      await addDoc(collection(db, "devis"), data);
+      setIsSuccess(true);
+      // Fermeture automatique après 3 secondes
+      setTimeout(() => {
+        onClose();
+        setIsSuccess(false);
+      }, 3500);
+    } catch (error) {
+      console.error("Erreur Firebase:", error);
+      alert("Une erreur est survenue lors de l'envoi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm">
       <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-[3rem] max-w-lg w-full overflow-hidden shadow-2xl relative"
+        initial={{ scale: 0.9, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }} 
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-white rounded-[3rem] max-w-lg w-full overflow-hidden shadow-2xl relative min-h-[500px] flex flex-col"
       >
-        <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
-          <h3 className="text-xl font-black uppercase italic">Demande de Devis</h3>
-          <button onClick={onClose} className="hover:rotate-90 transition-transform"><X /></button>
-        </div>
-        <form className="p-8 space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <div className="grid grid-cols-2 gap-4">
-            <input type="text" placeholder="Nom complet" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-blue-500" />
-            <input type="tel" placeholder="WhatsApp" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-blue-500" />
-          </div>
-          <select className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none">
-            <option>Import Chine → Abidjan</option>
-            <option>Export Abidjan → Paris</option>
-            <option>Import Dubaï → Abidjan</option>
-            <option>Export Abidjan → Dubaï</option>
-            <option>Envoi Express (DHL/FedEx)</option>
-          </select>
-          <div className="grid grid-cols-2 gap-4">
-            <input type="text" placeholder="Marchandise" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none" />
-            <input type="number" placeholder="Poids (kg)" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none" />
-          </div>
-          <textarea placeholder="Précisions sur votre cargaison..." rows={2} className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none"></textarea>
-          <button className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase italic flex items-center justify-center gap-2 hover:bg-blue-600 transition-all">
-            Envoyer ma demande <Send size={16} />
-          </button>
-        </form>
+        <AnimatePresence mode="wait">
+          {!isSuccess ? (
+            <motion.div 
+              key="form-content"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }}
+              className="flex flex-col h-full"
+            >
+              <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
+                <h3 className="text-xl font-black uppercase italic">Demande de Devis</h3>
+                <button onClick={onClose} className="hover:rotate-90 transition-transform"><X /></button>
+              </div>
+
+              <form className="p-8 space-y-4" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-2 gap-4">
+                  <input name="nom" required type="text" placeholder="Nom complet" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-blue-500" />
+                  <input name="whatsapp" required type="tel" placeholder="WhatsApp" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-blue-500" />
+                </div>
+
+                <select 
+                  name="destination" 
+                  required 
+                  defaultValue=""
+                  className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-blue-500 appearance-none"
+                >
+                  <option value="" disabled>Choisir une destination...</option>
+                  <optgroup label="Axes Internationaux">
+                    <option value="Import Chine → Abidjan">Import Chine → Abidjan</option>
+                    <option value="Export Abidjan → Paris">Export Abidjan → Paris</option>
+                    <option value="Import Dubaï → Abidjan">Import Dubaï → Abidjan</option>
+                  </optgroup>
+                  <optgroup label="Axe Afrique">
+                    <option value="Transit → Libreville (Gabon)">Transit → Libreville (Gabon)</option>
+                    <option value="Transit → Brazzaville (Congo)">Transit → Brazzaville (Congo)</option>
+                    <option value="Transit → Cameroun">Transit → Cameroun</option>
+                    <option value="Transit → Kinshasa (RDC)">Transit → Kinshasa (RDC)</option>
+                    <option value="Transit → Bamako (Mali)">Transit → Bamako (Mali)</option>
+                    <option value="Transit → Dakar (Sénégal)">Transit → Dakar (Sénégal)</option>
+                  </optgroup>
+                </select>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <input name="marchandise" required type="text" placeholder="Marchandise" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none" />
+                  <input name="poids" required type="number" placeholder="Poids (kg)" className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none" />
+                </div>
+
+                <textarea name="details" placeholder="Précisions..." rows={2} className="w-full p-4 bg-slate-100 rounded-2xl text-sm font-bold outline-none resize-none"></textarea>
+
+                <button 
+                  disabled={loading}
+                  type="submit"
+                  className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase italic flex items-center justify-center gap-2 hover:bg-blue-600 transition-all disabled:opacity-50"
+                >
+                  {loading ? (
+                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
+                      <Clock size={20} />
+                    </motion.div>
+                  ) : (
+                    <>Envoyer ma demande <Send size={16} /></>
+                  )}
+                </button>
+              </form>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="success-content"
+              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col items-center justify-center p-12 text-center"
+            >
+              <motion.div 
+                initial={{ scale: 0 }} animate={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-100"
+              >
+                <CheckCircle2 size={48} />
+              </motion.div>
+              <h3 className="text-3xl font-black uppercase italic text-slate-900 mb-2">Demande Reçue !</h3>
+              <p className="text-slate-500 font-medium italic leading-relaxed">
+                Votre demande a été transmise à nos experts. <br />
+                Nous vous contacterons sur <span className="text-blue-600 font-bold underline">WhatsApp</span> très rapidement.
+              </p>
+              
+              <div className="mt-10 w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ x: "-100%" }} animate={{ x: "0%" }} transition={{ duration: 3, ease: "easeInOut" }}
+                  className="w-full h-full bg-emerald-500"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
@@ -80,12 +185,29 @@ const ROUTES = [
     icon: <Globe2 size={24} />,
     color: "bg-blue-600",
     badge: "Global Trade Hub",
-    intro: "Dubaï comme porte d’entrée internationale, Abidjan comme destination finale. Nous sécurisons chaque étape de votre importation.",
+    intro: "Dubaï comme porte d’entrée internationale, Abidjan comme destination finale.",
     details: [
       { label: "Modes", val: "Avion & Bateau", icon: <Ship size={16} /> },
       { label: "Sourcing", val: "Accompagnement", icon: <TrendingUp size={16} /> },
       { label: "Sécurité", val: "100% Garanti", icon: <ShieldCheck size={16} /> }
     ],
+  },
+  {
+    id: "afrique",
+    title: "Axe Afrique",
+    icon: <MapPin size={24} />,
+    color: "bg-emerald-600",
+    badge: "Transit Sous-Régional",
+    intro: "Un réseau interconnecté à travers tout le continent.",
+    details: [
+      { label: "Zones", val: "UEMOA & CEMAC", icon: <Globe2 size={16} /> },
+      { label: "Pays", val: "Mali, Sénégal, Gabon...", icon: <CheckCircle2 size={16} /> },
+      { label: "Suivi", val: "Temps Réel", icon: <Zap size={16} /> }
+    ],
+    countries: [
+      "Libreville (Gabon)", "Brazzaville (Congo)", "Cameroun", "Kinshasa (RDC)", 
+      "Conakry (Guinée)", "Bamako (Mali)", "Ouagadougou (Burkina)", "Dakar (Sénégal)"
+    ]
   }
 ];
 
@@ -108,37 +230,41 @@ export default function ImportExportPage() {
             <h1 className="text-5xl md:text-8xl font-black text-white italic uppercase tracking-tighter mt-6 leading-tight">
               BOLOU-HK <br /> <span className="text-blue-500">GROUPE.</span>
             </h1>
-            <p className="text-slate-400 mt-8 text-lg italic font-medium max-w-xl leading-relaxed">
-              Simplifiez vos échanges internationaux. Nous gérons le transport de vos marchandises entre la <span className="text-white">Chine, Abidjan, Dubai et Paris</span> avec une rigueur absolue.
-            </p>
+            <div className="mt-8 min-h-[100px]">
+              <div className="text-slate-400 text-lg italic font-medium max-w-xl leading-relaxed">
+                Simplifiez vos échanges entre{" "}
+                <span className="text-white font-bold inline-block">
+                  <Typewriter
+                    options={{
+                      strings: ["la Chine, Dubaï et Paris.", "Abidjan et Libreville.", "Bamako, Ouaga et le Sénégal."],
+                      autoStart: true, loop: true, delay: 40, cursor: "_"
+                    }}
+                  />
+                </span> avec une rigueur absolue.
+              </div>
+            </div>
           </motion.div>
 
           <div className="relative">
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="relative z-10 rounded-[3rem] overflow-hidden border-8 border-white/5 shadow-2xl aspect-square">
+            <div className="relative z-10 rounded-[3rem] overflow-hidden border-8 border-white/5 shadow-2xl aspect-square">
               <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80" alt="Logistique" className="w-full h-full object-cover grayscale-[20%]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-            </motion.div>
-            <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 4, repeat: Infinity }} className="absolute -top-6 -right-6 z-20 bg-blue-600 p-4 rounded-2xl text-white shadow-xl"><Plane size={28} /></motion.div>
-            <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 5, repeat: Infinity }} className="absolute top-1/2 -left-10 z-20 bg-white p-4 rounded-2xl text-slate-900 shadow-xl"><Package size={28} className="text-orange-500" /></motion.div>
+            </div>
           </div>
         </div>
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -mr-40 -mt-40" />
       </section>
 
-      {/* 2. SECTION INTERACTIVE D'AXES */}
+      {/* 2. SECTION AXES */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <h2 className="text-3xl font-black italic uppercase text-slate-900">Axes Stratégiques de <span className="text-blue-600">Transit</span></h2>
-          </div>
-          <div className="flex bg-slate-100 p-2 rounded-2xl">
+          <h2 className="text-3xl font-black italic uppercase text-slate-900">Axes Stratégiques de <span className="text-blue-600">Transit</span></h2>
+          <div className="flex flex-wrap bg-slate-100 p-2 rounded-2xl gap-1">
             {ROUTES.map((route) => (
               <button 
                 key={route.id} 
                 onClick={() => setActiveRoute(route.id)} 
-                className={`px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${activeRoute === route.id ? "bg-white text-blue-600 shadow-md" : "text-slate-400 hover:text-slate-600"}`}
+                className={`px-6 md:px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${activeRoute === route.id ? "bg-white text-blue-600 shadow-md" : "text-slate-400 hover:text-slate-600"}`}
               >
-                {route.title}
+                {route.id === "afrique" ? "Afrique" : route.title.split(' ↔ ')[0]}
               </button>
             ))}
           </div>
@@ -146,14 +272,22 @@ export default function ImportExportPage() {
 
         <AnimatePresence mode="wait">
           <motion.div key={activeRoute} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid lg:grid-cols-2 gap-8">
-            <div className="p-10 rounded-[3rem] border border-slate-100 bg-slate-50 flex flex-col justify-between">
-              <div>
+            <div className="p-10 rounded-[3rem] border border-slate-100 bg-slate-50">
                 <div className="flex items-center gap-3 mb-6">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${current?.color}`}>{current?.icon}</div>
                   <span className="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-[9px] font-black uppercase">{current?.badge}</span>
                 </div>
                 <h3 className="text-4xl font-black uppercase italic text-slate-900 mb-4">{current?.title}</h3>
                 <p className="text-slate-500 font-medium italic mb-8 leading-relaxed">{current?.intro}</p>
+                
+                {current?.id === "afrique" && (
+                  <div className="mb-8 flex flex-wrap gap-2">
+                    {current.countries?.map((c, i) => (
+                      <span key={i} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600">{c}</span>
+                    ))}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {current?.details.map((d, i) => (
                     <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
@@ -163,10 +297,8 @@ export default function ImportExportPage() {
                     </div>
                   ))}
                 </div>
-              </div>
             </div>
 
-            {/* SECTION SERVICES (Remplace les prix et listes de produits) */}
             <div className="bg-slate-900 rounded-[3rem] p-10 text-white relative overflow-hidden group">
               <div className="relative z-10 h-full flex flex-col justify-between">
                 <div>
@@ -176,14 +308,7 @@ export default function ImportExportPage() {
                         <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0"><Utensils size={18} className="text-orange-500"/></div>
                         <div>
                             <p className="font-black italic uppercase text-sm">Fret Alimentaire</p>
-                            <p className="text-xs text-slate-400 italic mt-1">denré alimentaire et divers</p>
-                        </div>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center shrink-0"><Ship size={18} className="text-blue-400"/></div>
-                        <div>
-                            <p className="font-black italic uppercase text-sm">Sourcing International</p>
-                            <p className="text-xs text-slate-400 italic mt-1">Achat et transport de marchandises depuis (Chine/Turquie/dubai/paris).</p>
+                            <p className="text-xs text-slate-400 italic mt-1">Denrée alimentaire et divers</p>
                         </div>
                     </div>
                   </div>
@@ -195,48 +320,18 @@ export default function ImportExportPage() {
                   Obtenir une cotation <ChevronRight size={18} />
                 </button>
               </div>
-              <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-700" />
             </div>
           </motion.div>
         </AnimatePresence>
       </section>
 
-      {/* 3. SECTION PARTENAIRES EXPRESS */}
+      {/* FOOTER */}
       <section className="py-20 bg-slate-50 border-y border-slate-100 text-center">
-        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-12">Réseau Express International</h3>
         <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
           {PARTNERS.map(p => (<span key={p} className="text-3xl md:text-5xl font-black text-slate-900 italic tracking-tighter">{p}</span>))}
         </div>
       </section>
 
-      {/* 4. SECTION ENGAGEMENT FINAL */}
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <div className="bg-blue-600 rounded-[4rem] p-12 md:p-20 text-white grid lg:grid-cols-2 gap-12 items-center shadow-2xl shadow-blue-500/20">
-          <div>
-            <h2 className="text-4xl md:text-5xl font-black italic uppercase leading-none mb-6">Expertise <span className="text-slate-900">Sans Frontières.</span></h2>
-            <div className="space-y-4">
-              {["Dédouanement automatisé", "Traçabilité temps réel", "Assurance transport incluse", "Support WhatsApp 24/7"].map((text, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="text-slate-900" size={20} />
-                  <span className="font-bold italic text-sm md:text-lg">{text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-[3rem] p-8 border border-white/20 text-center">
-            <h4 className="text-xl font-black uppercase italic mb-4">Prêt à expédier ?</h4>
-            <p className="text-sm mb-8 opacity-90 italic">Nos experts sont disponibles pour optimiser vos coûts de transport.</p>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="w-full py-5 bg-white text-blue-600 rounded-2xl font-black uppercase italic tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl"
-            >
-              Démarrer mon projet
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* APPEL DU FORMULAIRE */}
       <AnimatePresence>
         {isModalOpen && <QuoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
       </AnimatePresence>

@@ -85,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {!isAdminPage && (
             <>
               <NewsletterPopup />
-              <ServiceModal />
+              <ServiceModal key="main-service-modal" /> {/* Ajoutez cette key */}
               <WhatsAppBubble />
             </>
           )}
