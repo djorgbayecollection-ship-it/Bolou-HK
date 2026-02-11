@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Code2, Megaphone, Camera, Layout, 
-  Rocket, ChevronRight, ExternalLink, X 
+  Rocket, ChevronRight, ExternalLink, X, Target, Zap, ShieldCheck 
 } from "lucide-react";
 import { useServiceModal } from "@/context/ServiceContext";
 import { db } from "@/lib/firebase";
@@ -44,87 +44,41 @@ const DIGITAL_SERVICES = [
   }
 ];
 
-console.log("📁 Fichier DigitalPage chargé");
-
-
 export default function DigitalPage() {
-  console.log("🔥 DigitalPage est monté");
   const { openModal } = useServiceModal();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
-  // 🔹 Fetch portfolio depuis Firestore sans orderBy (tri côté client)
   useEffect(() => {
-  const fetchPortfolio = async () => {
-    console.log("🚀 Début récupération portfolio...");
-
-    try {
-      const snap = await getDocs(collection(db, "portfolio"));
-
-      console.log("📦 Snapshot brut :", snap);
-      console.log("📊 Nombre de documents :", snap.size);
-
-      if (snap.empty) {
-        console.warn("⚠️ La collection portfolio est VIDE !");
+    const fetchPortfolio = async () => {
+      try {
+        const snap = await getDocs(collection(db, "portfolio"));
+        const data = snap.docs.map(doc => {
+          const rawData = doc.data();
+          let formattedDate = rawData.createdAt?.toDate ? rawData.createdAt.toDate() : (rawData.createdAt ? new Date(rawData.createdAt) : new Date(0));
+          return { id: doc.id, ...rawData, createdAt: formattedDate };
+        });
+        data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        setProjects(data);
+      } catch (error) {
+        console.error("❌ ERREUR FIRESTORE :", error);
+        setProjects([]);
+      } finally {
+        setLoading(false);
       }
-
-      const data = snap.docs.map(doc => {
-        const rawData = doc.data();
-        console.log("📄 Document brut :", doc.id, rawData);
-
-        let formattedDate = null;
-
-        if (rawData.createdAt?.toDate) {
-          formattedDate = rawData.createdAt.toDate();
-          console.log("🕒 createdAt est un Timestamp :", formattedDate);
-        } else if (rawData.createdAt) {
-          formattedDate = new Date(rawData.createdAt);
-          console.log("🕒 createdAt est une string :", formattedDate);
-        } else {
-          formattedDate = new Date(0);
-          console.warn("⚠️ createdAt manquant !");
-        }
-
-        return {
-          id: doc.id,
-          ...rawData,
-          createdAt: formattedDate
-        };
-      });
-
-      console.log("✅ Données formatées avant tri :", data);
-
-      data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-      console.log("🏆 Données après tri :", data);
-
-      setProjects(data);
-
-    } catch (error) {
-      console.error("❌ ERREUR FIRESTORE :", error);
-      setProjects([]);
-    } finally {
-      setLoading(false);
-      console.log("🏁 Fin récupération portfolio");
-    }
-  };
-
-  fetchPortfolio();
-}, []);
+    };
+    fetchPortfolio();
+  }, []);
 
   const getOptimizedUrl = (url: string) => {
     if (!url || typeof url !== 'string') return "";
-    return url.includes('/upload/') 
-      ? url.replace('/upload/', '/upload/c_fill,g_auto,w_800,h_1000,q_auto,f_auto/')
-      : url;
+    return url.includes('/upload/') ? url.replace('/upload/', '/upload/c_fill,g_auto,w_800,h_1000,q_auto,f_auto/') : url;
   };
 
   const getHDUrl = (url: string) => {
     if (!url || typeof url !== 'string') return "";
-    return url.includes('/upload/')
-      ? url.replace('/upload/', '/upload/q_auto,f_auto,w_1600/')
-      : url;
+    return url.includes('/upload/') ? url.replace('/upload/', '/upload/q_auto,f_auto,w_1600/') : url;
   };
 
   return (
@@ -144,13 +98,13 @@ export default function DigitalPage() {
         <div className="max-w-7xl mx-auto text-center relative z-10 pt-20">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <span className="px-6 py-2 bg-orange-500 text-white rounded-full text-[10px] font-black uppercase tracking-[0.4em] shadow-[0_0_20px_rgba(249,115,22,0.4)]">
-              BHK Digital Agency
+              BHK Digital Agency — Branche Tech de Bolou-HK
             </span>
-            <h1 className="text-6xl md:text-[10rem] font-black italic uppercase tracking-tighter mt-8 leading-[0.85] text-white">
-              L'Élite <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-400">Numérique.</span>
+            <h1 className="text-6xl md:text-[9rem] font-black italic uppercase tracking-tighter mt-8 leading-[0.85] text-white">
+              L'Impact <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-400">Digital.</span>
             </h1>
-            <p className="text-slate-300 max-w-2xl mx-auto mt-10 text-lg md:text-xl font-medium italic opacity-80">
-              Expertise tech et créativité sans limite pour votre ascension digitale.
+            <p className="text-slate-300 max-w-3xl mx-auto mt-10 text-lg md:text-xl font-medium italic opacity-90 leading-relaxed">
+              Spécialiste de la communication, du Marketing Digital et de l'imprimerie numérique & offset. Nous transformons vos visions en supports innovants de grande qualité.
             </p>
             <button 
               onClick={() => openModal("DIGITAL-GENERAL")}
@@ -158,6 +112,67 @@ export default function DigitalPage() {
             >
               Démarrer l'expérience
             </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SECTION MISSION & FORCE (Nouveau) */}
+      <section className="py-24 px-6 relative bg-gradient-to-b from-transparent to-white/5">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} 
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <h2 className="text-5xl font-black uppercase italic tracking-tighter">
+              Notre <span className="text-orange-500">Mission</span>
+            </h2>
+            <p className="text-slate-300 text-xl italic leading-relaxed font-medium">
+              Réaliser parfaitement et fidèlement tous vos projets afin d'atteindre vos objectifs de performance et de croissance, tout en impactant votre public avec des supports de communication innovants et de grande qualité.
+            </p>
+            <div className="flex gap-6">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 bg-orange-500/20 text-orange-500 rounded-full flex items-center justify-center">
+                  <Target size={24} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-orange-500">Performance</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 bg-blue-500/20 text-blue-500 rounded-full flex items-center justify-center">
+                  <Zap size={24} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">Innovation</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center">
+                  <ShieldCheck size={24} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Qualité</span>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-white/5 p-10 rounded-[3rem] border border-white/10 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500 blur-[100px] opacity-20" />
+            <h3 className="text-3xl font-black uppercase italic mb-6">Notre Force</h3>
+            <p className="text-slate-400 text-lg italic leading-relaxed">
+              "Tous nos efforts consentis sont focalisés sur la réussite de nos clients. Votre croissance est le seul indicateur de notre succès."
+            </p>
+            <div className="mt-8 pt-8 border-t border-white/10 flex items-center gap-4">
+              <div className="w-12 h-12 bg-slate-800 rounded-full overflow-hidden border border-orange-500/50">
+                <img src="/logo.png" alt="BHK" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <p className="font-black uppercase italic text-sm">L'engagement BHK Digital</p>
+                <p className="text-orange-500 text-[10px] font-bold uppercase tracking-[0.2em]">Customer First</p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -202,9 +217,7 @@ export default function DigitalPage() {
             {loading ? (
               <motion.div 
                 key="skeleton-group"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="flex gap-8"
               >
                 {[1, 2, 3].map((n) => (
