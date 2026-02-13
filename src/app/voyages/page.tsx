@@ -26,8 +26,6 @@ const THEME_ICONS: Record<number, React.ReactElement[]> = {
   4: [<Star key="i1" size={48} strokeWidth={2.5} />, <Heart key="i2" size={48} strokeWidth={2.5} />],
 };
 
-
-
 interface Destination {
   id: string;
   city: string;
@@ -74,28 +72,23 @@ export default function VoyagesPage() {
 
     setIsSubmitting(true);
     try {
-      // On envoie vers "bookings" comme pour l'assurance
       await addDoc(collection(db, "bookings"), {
         clientName: formData.name,
         whatsapp: formData.phone,
         travelDate: formData.date,
         destinationSouhaitee: formData.destination || null,
         projetTouristique: formData.projet || null,
-        interest: activeBooking?.title, // ex: Billetterie Aérienne
-        type: activeBooking?.type || "Voyage", // Important pour le filtre Dashboard
+        interest: activeBooking?.title,
+        type: activeBooking?.type || "Voyage",
         image: activeBooking?.image || null,
         status: "nouveau",
         createdAt: serverTimestamp()
       });
 
-      // Déclenchement de la notification
       setActiveBooking(null);
       setShowNotification(true);
       setFormData({ name: "", phone: "", date: "", destination: "", projet: "" });
-      
-      // Fermer la notification après 5 secondes
       setTimeout(() => setShowNotification(false), 5000);
-
     } catch (error) {
       console.error(error);
       alert("Une erreur est survenue lors de l'envoi.");
@@ -107,63 +100,44 @@ export default function VoyagesPage() {
   return (
     <main className="min-h-screen bg-white overflow-hidden relative">
       
-      {/* NOTIFICATION DE SUCCÈS */}
       {/* NOTIFICATION DE SUCCÈS PREMIUM */}
-<AnimatePresence>
-  {showNotification && (
-    <motion.div 
-      initial={{ opacity: 0, y: -100, scale: 0.8 }}
-      animate={{ opacity: 1, y: 20, scale: 1 }}
-      exit={{ opacity: 0, y: -100, scale: 0.8 }}
-      className="fixed top-10 left-1/2 -translate-x-1/2 z-[200] w-[90%] max-w-md"
-    >
-      <div className="bg-slate-900/95 backdrop-blur-xl border-2 border-orange-500/30 p-1 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center p-4 gap-5">
-          {/* Icône de succès animée */}
-          <div className="relative">
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1.2, 1] }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="bg-gradient-to-br from-orange-400 to-orange-600 p-3 rounded-2xl shadow-lg shadow-orange-500/40"
-            >
-              <CheckCircle size={28} className="text-white" strokeWidth={3} />
-            </motion.div>
-            {/* Petit point brillant */}
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-orange-500"></span>
-            </span>
-          </div>
-
-          <div className="flex-1">
-            <h4 className="text-white font-black italic uppercase text-sm tracking-tighter leading-none mb-1">
-              Demande <span className="text-orange-500">transmise !</span>
-            </h4>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tight leading-tight">
-              Un agent BHK Voyage vous recontacte sur WhatsApp d'ici peu.
-            </p>
-          </div>
-
-          <button 
-            onClick={() => setShowNotification(false)}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-500"
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div 
+            initial={{ opacity: 0, y: -100, scale: 0.8 }}
+            animate={{ opacity: 1, y: 20, scale: 1 }}
+            exit={{ opacity: 0, y: -100, scale: 0.8 }}
+            className="fixed top-10 left-1/2 -translate-x-1/2 z-[200] w-[90%] max-w-md"
           >
-            <X size={20} />
-          </button>
-        </div>
-        
-        {/* Barre de progression de fermeture automatique */}
-        <motion.div 
-          initial={{ width: "100%" }}
-          animate={{ width: "0%" }}
-          transition={{ duration: 5, ease: "linear" }}
-          className="h-1 bg-orange-500 rounded-full mx-6 mb-1 opacity-50"
-        />
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+            <div className="bg-slate-900/95 backdrop-blur-xl border-2 border-orange-500/30 p-1 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center p-4 gap-5">
+                <div className="relative">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [0, 1.2, 1] }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    className="bg-gradient-to-br from-orange-400 to-orange-600 p-3 rounded-2xl shadow-lg shadow-orange-500/40"
+                  >
+                    <CheckCircle size={28} className="text-white" strokeWidth={3} />
+                  </motion.div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-white font-black italic uppercase text-sm tracking-tighter leading-none mb-1">
+                    Demande <span className="text-orange-500">transmise !</span>
+                  </h4>
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tight leading-tight">
+                    Un agent BHK Voyage vous recontacte sur WhatsApp d'ici peu.
+                  </p>
+                </div>
+                <button onClick={() => setShowNotification(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-500">
+                  <X size={20} />
+                </button>
+              </div>
+              <motion.div initial={{ width: "100%" }} animate={{ width: "0%" }} transition={{ duration: 5, ease: "linear" }} className="h-1 bg-orange-500 rounded-full mx-6 mb-1 opacity-50" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 1. HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -187,7 +161,6 @@ export default function VoyagesPage() {
       <section className="py-32 px-6 max-w-7xl mx-auto relative">
         <div className="text-center mb-16 relative">
           <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tighter uppercase italic">Nos Services De Qualité</h2>
-          
           <div className="max-w-3xl mx-auto mb-10 min-h-[140px] flex items-center justify-center relative">
             <AnimatePresence mode="wait">
               {THEME_ICONS[currentThemeIndex]?.map((icon, i) => (
@@ -202,26 +175,47 @@ export default function VoyagesPage() {
                 {icon}
               </motion.div>
             ))}
-
             </AnimatePresence>
-
             <div className="text-slate-600 text-lg md:text-2xl leading-relaxed font-medium italic text-center z-10 px-10">
-              <Typewriter
-                onInit={(typewriter) => {
-                  typewriter
-                    .typeString("Nos services de <span style='color: #f97316; font-weight: 900;'>Qualité</span> vous offrent des solutions.")
-                    .pauseFor(2500).callFunction(() => setCurrentThemeIndex(1)).deleteAll()
-                    .typeString("Nous proposons des <span style='color: #3b82f6; font-weight: 900;'>Forfaits Personnalisés</span>.")
-                    .pauseFor(2500).callFunction(() => setCurrentThemeIndex(2)).deleteAll()
-                    .typeString("Billets d'avion aux <span style='color: #f97316; font-weight: 900;'>Meilleures Destinations</span>.")
-                    .pauseFor(2500).callFunction(() => setCurrentThemeIndex(3)).deleteAll()
-                    .typeString("Assistance <span style='color: #3b82f6; font-weight: 900;'>24h/7j</span> pour un voyage sans stress.")
-                    .pauseFor(2500).callFunction(() => setCurrentThemeIndex(4)).deleteAll()
-                    .typeString("Rendre votre expérience <span style='color: #f97316; font-weight: 900;'>Inoubliable</span>.")
-                    .pauseFor(2500).callFunction(() => setCurrentThemeIndex(0)).start();
-                }}
-                options={{ autoStart: true, loop: true, delay: 40, cursor: "|" }}
-              />
+            <Typewriter
+            onInit={(typewriter) => {
+              typewriter
+                // --- PHRASE 1 ---
+                .typeString("Nos services de <span style='color: #f97316; font-weight: 900;'>Qualité</span> vous offrent des solutions.")
+                
+
+                // --- PHRASE 2 ---
+                .callFunction(() => setCurrentThemeIndex(1))
+                .typeString("Nous proposons des <span style='color: #3b82f6; font-weight: 900;'>Forfaits Personnalisés</span>.")
+                
+
+                // --- PHRASE 3 ---
+                .callFunction(() => setCurrentThemeIndex(2))
+                .typeString("Billets d'avion aux <span style='color: #f97316; font-weight: 900;'>Meilleures Destinations</span>.")
+                
+
+                // --- PHRASE 4 ---
+                .callFunction(() => setCurrentThemeIndex(3))
+                .typeString("Assistance <span style='color: #3b82f6; font-weight: 900;'>24h/7j</span> pour un voyage sans stress.")
+                
+
+                // --- PHRASE 5 ---
+                .callFunction(() => setCurrentThemeIndex(4))
+                .typeString("Rendre votre expérience <span style='color: #f97316; font-weight: 900;'>Inoubliable</span>.")
+                .pauseFor(3000)
+                .deleteAll(30)
+                
+                // Retour à l'index 0 pour la boucle
+                .callFunction(() => setCurrentThemeIndex(0))
+                .start();
+            }}
+            options={{ 
+              autoStart: true, 
+              loop: true, 
+              delay: 40, 
+              cursor: "|" 
+            }}
+          />
             </div>
           </div>
         </div>
@@ -255,29 +249,48 @@ export default function VoyagesPage() {
         {activeBooking && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setActiveBooking(null)} className="absolute inset-0 bg-slate-950/90 backdrop-blur-md" />
-            
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative w-full max-w-5xl bg-white rounded-[3rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
               <button onClick={() => setActiveBooking(null)} className="absolute top-6 right-6 z-50 p-2 bg-slate-900 text-white rounded-full transition-all"><X size={24} /></button>
-              
               <div className="flex-1 overflow-y-auto p-8 lg:p-12">
                 
+                {/* ETAPE 0 : CAROUSEL DES CIRCUITS */}
                 {activeBooking.type === "Voyage" && activeBooking.step === 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-transparent hover:border-brand-orange transition-all group">
-                      <Briefcase className="text-brand-orange mb-4" size={32} />
-                      <h3 className="text-2xl font-black uppercase italic mb-3">Tourisme Affaire</h3>
-                      <p className="text-slate-600 text-sm italic mb-6">Visite touristique de sites attractifs et exceptionnels. Dubaï, Turquie etc...</p>
-                      <button onClick={() => setActiveBooking({...activeBooking, step: 1, title: "Circuit Affaire"})} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic hover:bg-brand-orange transition-colors">Choisir ce circuit</button>
+                  <div className="flex flex-col">
+                    <div className="mb-10">
+                      <h3 className="text-4xl font-black uppercase italic tracking-tighter">Nos Circuits <span className="text-brand-orange">Spécialisés</span></h3>
+                      <p className="text-slate-500 font-medium italic">Sélectionnez le type de voyage qui vous correspond</p>
                     </div>
 
-                    <div className="bg-slate-50 rounded-[2.5rem] p-8 border-2 border-transparent hover:border-blue-500 transition-all group">
-                      <Activity className="text-blue-500 mb-4" size={32} />
-                      <h3 className="text-2xl font-black uppercase italic mb-3">Tourisme Médical</h3>
-                      <p className="text-slate-600 text-sm italic mb-6">Besoin d'un bilan ou suivi médical spécialisé de pointe.</p>
-                      <button onClick={() => setActiveBooking({...activeBooking, step: 1, title: "Circuit Médical"})} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic hover:bg-blue-500 transition-colors">Visiter votre centre médical</button>
+                    <div className="flex gap-6 overflow-x-auto pb-8 snap-x scrollbar-hide">
+                      {/* CARD: AFFAIRE */}
+                      <motion.div whileHover={{ y: -10 }} className="min-w-[250px] md:min-w-[300px] snap-center bg-slate-50 rounded-[2.5rem] overflow-hidden border-2 border-transparent hover:border-brand-orange transition-all group flex flex-col">
+                        <div className="h-75 overflow-hidden">
+                          <img src="https://res.cloudinary.com/dkjqh8snc/image/upload/v1771020820/collage_site_web_ya8awm.png" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Affaire" />
+                        </div>
+                        <div className="p-8 flex-1 flex flex-col">
+                          <Briefcase className="text-brand-orange mb-4" size={32} />
+                          <h3 className="text-2xl font-black uppercase italic mb-3">Tourisme Affaire</h3>
+                          <p className="text-slate-600 text-sm italic mb-8 flex-1">Visite touristique de sites attractifs et exceptionnels. Dubaï, Turquie et pôles économiques majeurs.</p>
+                          <button onClick={() => setActiveBooking({...activeBooking, step: 1, title: "Circuit Affaire", image: "https://res.cloudinary.com/dkjqh8snc/image/upload/v1771021352/collage_site_web_2_h0zvgj.png"})} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic hover:bg-brand-orange transition-colors">Choisir ce circuit</button>
+                        </div>
+                      </motion.div>
+
+                      {/* CARD: MEDICAL */}
+                      <motion.div whileHover={{ y: -10 }} className="min-w-[300px] md:min-w-[400px] snap-center bg-slate-50 rounded-[2.5rem] overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all group flex flex-col">
+                        <div className="h-78 overflow-hidden">
+                          <img src="https://res.cloudinary.com/dkjqh8snc/image/upload/v1771021075/t%C3%A9l%C3%A9chargement_9_rfgjyz.jpg" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Medical" />
+                        </div>
+                        <div className="p-8 flex-1 flex flex-col">
+                          <Activity className="text-blue-500 mb-4" size={32} />
+                          <h3 className="text-2xl font-black uppercase italic mb-3">Tourisme Médical</h3>
+                          <p className="text-slate-600 text-sm italic mb-8 flex-1">Besoin d'un bilan ou suivi médical spécialisé de pointe dans les meilleures infrastructures mondiales.</p>
+                          <button onClick={() => setActiveBooking({...activeBooking, step: 1, title: "Circuit Médical", image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800"})} className="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase italic hover:bg-blue-500 transition-colors">Visiter votre centre</button>
+                        </div>
+                      </motion.div>
                     </div>
                   </div>
                 ) : (
+                  /* FORMULAIRE FINAL */
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="hidden lg:block h-full min-h-[400px]">
                       <img src={activeBooking.image || "https://res.cloudinary.com/dkjqh8snc/image/upload/v1770803751/Mastering_Transportation_Logistics_-_Your_Guide_to_Seamless_Travel_hcdtip.jpg"} className="w-full h-full object-cover rounded-[2rem]" alt="" />
@@ -287,7 +300,6 @@ export default function VoyagesPage() {
                         <span className="bg-brand-orange/10 text-brand-orange px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Demande Directe</span>
                         <h4 className="text-3xl font-black text-slate-800 mt-2 italic uppercase tracking-tighter">{activeBooking.title}</h4>
                       </div>
-                      
                       <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="relative group">
                           <MapPin className="absolute left-4 top-4 text-brand-orange" size={18} />

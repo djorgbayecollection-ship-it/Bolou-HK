@@ -88,7 +88,7 @@ export default function HomePage() {
           
           <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] mb-8 italic">
             BOLOU-HK <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-blue-600 to-orange-500">GROUPE</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-blue-600 to-orange-500">GROUP</span>
           </h1>
 
           <div className="flex flex-col lg:flex-row gap-10 items-start">
@@ -96,7 +96,7 @@ export default function HomePage() {
               Une architecture de services pensée pour l'excellence. Nous fusionnons le 
               <span className="text-slate-900 font-bold"> Voyage</span>, le 
               <span className="text-slate-900 font-bold"> Digital</span>, l' 
-              <span className="text-slate-900 font-bold"> Assurance</span> et
+              <span className="text-slate-900 font-bold"> Assurance</span> et la
               <span className="text-slate-900 font-bold"> Logistique</span>.
             </p>
             

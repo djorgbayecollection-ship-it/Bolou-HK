@@ -14,7 +14,7 @@ const FOOTER_LINKS = [
       { name: "Agence Digitale", href: "/services/digital" },
       { name: "Voyage & Tourisme", href: "/services/voyages" },
       { name: "Import - Export", href: "/services/divers" },
-      { name: "HK Academy", href: "/services/formation" },
+      { name: "BHK Academy", href: "/services/formation" },
     ]
   },
   {
@@ -98,7 +98,7 @@ export default function Footer() {
           <div>
             <h4 className="text-orange-500 font-black uppercase text-[10px] tracking-[0.2em] mb-5 italic">Direct</h4>
             <ul className="space-y-3">
-              <ContactLink icon={<Phone size={14} />} text="+225 0574467386" />
+              <ContactLink icon={<Phone size={14} />} text="+225 07 11 81 25 10 • 05 74 46 73 86 • 07 19 65 93 68 • 07 13 82 87 61" />
               <ContactLink icon={<Mail size={14} />} text="info@bolou-hk.com" />
               <ContactLink icon={<MapPin size={14} />} text="Abidjan, CI" />
             </ul>

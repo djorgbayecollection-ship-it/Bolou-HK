@@ -42,6 +42,18 @@ export default function AddAdForm() {
     setLoading(true);
 
     try {
+      // 1. NETTOYAGE DU LIEN (INDISPENSABLE)
+      let finalLink = link.trim();
+      
+      // Si le lien n'est pas vide et ne commence pas par http, on force le protocole
+      if (finalLink && !finalLink.startsWith("http://") && !finalLink.startsWith("https://")) {
+        finalLink = `https://${finalLink}`;
+      }
+      
+      // Si le lien est toujours vide, on met un lien par défaut
+      if (!finalLink) finalLink = "#";
+
+      // 2. ENVOI CLOUDINARY
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
@@ -52,10 +64,11 @@ export default function AddAdForm() {
       });
       const imageData = await res.json();
 
+      // 3. ENVOI FIREBASE AVEC LE LIEN NETTOYÉ
       await addDoc(collection(db, "ads"), {
         imageUrl: imageData.secure_url,
         type,
-        link: link || "#",
+        link: finalLink, // <--- C'est ici que le changement opère
         active: true,
         createdAt: serverTimestamp(),
       });

@@ -62,8 +62,8 @@ export default function ContactPage() {
             <ContactInfo 
               icon={<Phone className="text-orange-500" />} 
               title="Téléphone & WhatsApp" 
-              value="+225 07 11 81 25 10" 
-              sub="Disponible de 08h à 19h"
+              value="+225 07 11 81 25 10 • 05 74 46 73 86 • 07 19 65 93 68 • 07 13 82 87 61" 
+              sub="Disponible H24/6J"
             />
             <ContactInfo 
               icon={<Mail className="text-orange-500" />} 

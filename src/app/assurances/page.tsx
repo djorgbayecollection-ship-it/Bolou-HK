@@ -133,7 +133,7 @@ export default function AssurancePage() {
 
           <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative">
             <div className="relative z-10 w-full max-w-md mx-auto aspect-square rounded-[4rem] overflow-hidden border-[12px] border-white shadow-2xl rotate-3">
-              <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80" alt="Courtier" className="w-full h-full object-cover" />
+              <img src="https://res.cloudinary.com/dkjqh8snc/image/upload/v1771021977/ChatGPT_Image_13_f%C3%A9vr._2026_22_28_34_izla0k.png" alt="Courtier" className="w-full h-full object-cover" />
             </div>
             <FloatingIcon delay={0} className="top-0 -left-10 bg-white text-blue-600"><Shield size={32} /></FloatingIcon>
             <FloatingIcon delay={0.5} className="bottom-20 -right-6 bg-orange-500 text-white"><Car size={32} /></FloatingIcon>

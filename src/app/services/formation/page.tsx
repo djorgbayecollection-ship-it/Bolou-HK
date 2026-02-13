@@ -13,15 +13,15 @@ const COURS = [
   },
   {
     title: "Informatique",
-    desc: "L'analphabète est celui qui n'a aucune maîtrise du numérique.",
+    desc: "Deviens autonome, compétitif et indispensable dans l'utilisation de l'outil informatique.",
     icon: <GraduationCap className="text-orange-500" />,
-    duration: "6 Mois"
+    duration: "L'analphabète est celui qui n'a aucune maîtrise du numérique."
   },
   {
     title: "Marketing et vente",
-    desc: "La vente est l'oxygène de toute entreprise.",
+    desc: "Apprends avec nous à transformer une idée en chiffre d’affaires et un effort en résultats; Apprendre à vendre !",
     icon: <Users className="text-emerald-500" />,
-    duration: "4 Mois"
+    duration: "La vente est l'oxygène de toute entreprise."
   }
 ];
 

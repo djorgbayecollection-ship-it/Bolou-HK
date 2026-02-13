@@ -111,3 +111,8 @@
            placeholder:text-slate-300 appearance-none;
   }
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

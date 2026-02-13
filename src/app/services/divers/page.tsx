@@ -49,7 +49,7 @@ export default function DiversPage() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="text-orange-500 font-black uppercase tracking-[0.4em] text-[10px]"
           >
-            Multi-Expertises BOLOU-HK
+            Multi-Expertise BOLOU-HK
           </motion.span>
           <h1 className="text-5xl md:text-8xl font-black text-white uppercase italic tracking-tighter mt-4 leading-none">
             Services <br /><span className="text-slate-500">Hors Limites.</span>
