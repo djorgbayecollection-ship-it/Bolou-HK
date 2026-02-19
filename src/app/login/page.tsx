@@ -1,18 +1,20 @@
 "use client";
 import { useState } from "react";
 import { auth } from "@/lib/firebase"; 
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, Loader2 } from "lucide-react";
+import { Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react"; // Importation des icônes d'œil
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // État pour voir le mot de passe
+  const [resetSent, setResetSent] = useState(false); // État pour le message de réinitialisation
   const router = useRouter();
 
-  // CONNEXION AVEC GOOGLE (LOGO GMAIL)
+  // CONNEXION AVEC GOOGLE
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     setLoading(true);
@@ -40,6 +42,21 @@ export default function LoginPage() {
     }
   };
 
+  // MOT DE PASSE OUBLIÉ
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Veuillez entrer votre email pour réinitialiser le mot de passe.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+      setError("");
+    } catch (err) {
+      setError("Erreur : Vérifiez l'adresse email saisie.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-slate-50">
       <div className="w-full max-w-md bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100">
@@ -49,7 +66,7 @@ export default function LoginPage() {
           <p className="text-slate-500 mt-2 font-medium">Connectez-vous pour gérer l'agence</p>
         </div>
 
-        {/* BOUTON GOOGLE (GMAIL STYLE) */}
+        {/* BOUTON GOOGLE */}
         <button 
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -81,15 +98,35 @@ export default function LoginPage() {
             <div className="relative">
               <Lock className="absolute left-4 top-4 text-slate-300" size={18} />
               <input 
-                type="password" 
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-brand-blue outline-none transition-all text-sm"
+                type={showPassword ? "text" : "password"} // Changement dynamique du type
+                className="w-full pl-12 pr-12 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-brand-blue outline-none transition-all text-sm"
                 placeholder="••••••••"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {/* Bouton pour voir/cacher */}
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-4 text-slate-300 hover:text-brand-blue"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
+          {/* MOT DE PASSE OUBLIÉ */}
+          <div className="flex justify-end px-2">
+            <button 
+              type="button" 
+              onClick={handleForgotPassword}
+              className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-brand-orange transition-colors"
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
+
           {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
+          {resetSent && <p className="text-emerald-500 text-xs font-bold text-center">Lien de réinitialisation envoyé par email !</p>}
 
           <button 
             type="submit" 

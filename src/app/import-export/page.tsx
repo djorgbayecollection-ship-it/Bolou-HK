@@ -32,9 +32,27 @@ const QuoteModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     };
 
     try {
+      // 1. Enregistrement dans la base de données Firebase
       await addDoc(collection(db, "devis"), data);
+
+      // 2. Préparation du message WhatsApp
+      const phone = "2250703353873"; // 🔥 REMPLACE PAR TON NUMÉRO (avec indicatif, sans le +)
+      const message = `*NOUVELLE DEMANDE DE DEVIS* 📦%0A%0A` +
+        `👤 *Nom:* ${data.nom}%0A` +
+        `📱 *WhatsApp:* ${data.whatsapp}%0A` +
+        `📍 *Destination:* ${data.destination}%0A` +
+        `📦 *Marchandise:* ${data.marchandise}%0A` +
+        `⚖️ *Poids:* ${data.poids} kg%0A` +
+        `📝 *Détails:* ${data.details || 'Aucun'}`;
+
+      const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
+
+      // 3. Ouverture de WhatsApp dans un nouvel onglet
+      window.open(whatsappUrl, "_blank");
+
+      // 4. Affichage de l'écran de succès
       setIsSuccess(true);
-      // Fermeture automatique après 3 secondes
+      
       setTimeout(() => {
         onClose();
         setIsSuccess(false);
