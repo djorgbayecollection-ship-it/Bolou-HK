@@ -2,66 +2,70 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { usePathname } from "next/navigation";
-import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import { useState, useEffect, Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// On garde la Navbar et les structures de base en import classique (priorité haute)
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/Footer"; 
-import PageTransition from "@/components/layout/PageTransition";
 import { ServiceProvider } from "@/context/ServiceContext"; 
-import { ServiceModal } from "@/components/ui/ServiceModal"; 
-import WhatsAppBubble from "@/components/ui/WhatsAppBubble";
-import NewsletterPopup from "@/components/ui/NewsletterPopup";
-import Partners from "@/components/layout/Partners";
-import Testimonials from "@/components/layout/Testimonials";
-import { useEffect } from "react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import CookieBanner from "@/components/ui/CookieBanner";
+import PageTransition from "@/components/layout/PageTransition";
 
-const inter = Inter({ subsets: ["latin"] });
+// ON CHARGE LES COMPOSANTS LOURDS DE MANIÈRE DYNAMIQUE (Uniquement quand c'est nécessaire)
+const AnimatedBackground = dynamic(() => import("@/components/ui/AnimatedBackground"), { ssr: false });
+const WhatsAppBubble = dynamic(() => import("@/components/ui/WhatsAppBubble"), { ssr: false });
+const NewsletterPopup = dynamic(() => import("@/components/ui/NewsletterPopup"), { ssr: false });
+const CookieBanner = dynamic(() => import("@/components/ui/CookieBanner"), { ssr: false });
+const ServiceModal = dynamic(() => import("@/components/ui/ServiceModal").then(mod => mod.ServiceModal), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
+const inter = Inter({ subsets: ["latin"], display: 'swap' });
+
+// Tracker optimisé (ne bloque plus le thread principal)
 function VisitorTracker() {
   const pathname = usePathname();
-
   useEffect(() => {
-    const trackVisit = async () => {
-      // MISE À JOUR : Vérification du consentement avant collecte
+    const timer = setTimeout(async () => {
       const consent = localStorage.getItem("cookie_consent");
       if (consent !== "accepted") return;
-
       if (pathname?.startsWith("/admin") || pathname?.startsWith("/login")) return;
       
       const hasVisited = sessionStorage.getItem("bolou_tracked");
       if (!hasVisited) {
         try {
+          const { db } = await import("@/lib/firebase");
+          const { collection, addDoc, serverTimestamp } = await import("firebase/firestore");
           await addDoc(collection(db, "visits"), {
             path: pathname,
             timestamp: serverTimestamp(),
             platform: navigator.platform,
-            language: navigator.language,
-            userAgent: navigator.userAgent,
-            referrer: document.referrer || "Direct"
+            userAgent: navigator.userAgent
           });
           sessionStorage.setItem("bolou_tracked", "true");
-        } catch (error) {
-          console.error("Tracking error:", error);
-        }
+        } catch (e) { console.error(e); }
       }
-    };
-    trackVisit();
+    }, 4000); // On attend 4 secondes
+    return () => clearTimeout(timer);
   }, [pathname]);
-
   return null;
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin") || pathname?.startsWith("/login");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // On attend que le premier rendu soit fait pour débloquer les widgets lourds
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   return (
     <html lang="fr" className="scroll-smooth">
-      <body className={`${inter.className} antialiased bg-white selection:bg-orange-500 selection:text-white min-h-screen flex flex-col`}>
+      <body className={`${inter.className} antialiased bg-white min-h-screen flex flex-col`}>
         <ServiceProvider>
           <VisitorTracker />
+          
+          {/* Background chargé uniquement si pas admin et avec une priorité basse */}
           {!isAdminPage && <AnimatedBackground />}
           
           <div className="relative flex flex-col flex-1 w-full overflow-x-hidden">
@@ -73,24 +77,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </PageTransition>
             </main>
 
-            {!isAdminPage && (
-              <>
-                <Partners />
-                <Testimonials />
-                <Footer />
-              </>
-            )}
+            {/* Footer chargé dynamiquement */}
+            {!isAdminPage && <Footer />}
           </div>
 
-          {!isAdminPage && (
+          {/* Widgets chargés uniquement APRÈS le chargement initial pour libérer le burger */}
+          {isLoaded && !isAdminPage && (
             <>
-              <NewsletterPopup />
-              <ServiceModal key="main-service-modal" /> {/* Ajoutez cette key */}
-              <WhatsAppBubble />
+              <Suspense fallback={null}>
+                <NewsletterPopup />
+                <ServiceModal key="main-service-modal" />
+                <WhatsAppBubble />
+                <CookieBanner />
+              </Suspense>
             </>
           )}
         </ServiceProvider>
-        <CookieBanner />
       </body>
     </html>
   );

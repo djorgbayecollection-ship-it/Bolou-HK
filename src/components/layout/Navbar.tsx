@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -35,22 +34,19 @@ export default function Navbar() {
     document.body.style.overflow = "unset";
   }, [pathname]);
 
-  // Bloquer le scroll quand le menu est ouvert
+  // Gestion du scroll ultra-simplifiée
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
+    return () => { document.body.style.overflow = "unset"; };
   }, [isMobileMenuOpen]);
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-[120] bg-white/95 backdrop-blur-xl border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-[120] bg-white border-b border-slate-100 h-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
           
           {/* LOGO */}
-          <Link href="/" className="relative flex items-center hover:opacity-90 transition-opacity">
+          <Link href="/" className="relative flex items-center">
             <div className="relative w-40 h-10 md:w-52 md:h-14"> 
               <Image 
                 src="/logo.png" 
@@ -62,7 +58,7 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* LINKS DESKTOP - Taille de police maintenue */}
+          {/* DESKTOP LINKS */}
           <div className="hidden xl:flex items-center gap-6">
             <NavLink href="/">Accueil</NavLink>
             <NavLink href="/apropos">À Propos</NavLink>
@@ -77,125 +73,91 @@ export default function Navbar() {
               onMouseEnter={() => setIsDropdownOpen(true)}
               onMouseLeave={() => setIsDropdownOpen(false)}
             >
-              <button className="flex items-center gap-1 font-bold text-slate-700 hover:text-brand-blue transition-colors py-8 text-sm uppercase tracking-wide">
-                Services + <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <button className="flex items-center gap-1 font-bold text-slate-700 py-8 text-sm uppercase">
+                Services + <ChevronDown size={16} />
               </button>
 
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-[85%] right-0 w-72 bg-white shadow-2xl rounded-3xl border border-slate-100 p-4"
-                  >
-                    <div className="grid gap-2">
-                      {otherServices.map((service) => (
-                        <Link
-                          key={service.name}
-                          href={service.href}
-                          className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 text-slate-700 hover:text-brand-blue font-bold transition-all group"
-                        >
-                          <span className="p-2 bg-slate-100 rounded-xl group-hover:bg-brand-blue group-hover:text-white transition-all">
-                            {service.icon}
-                          </span>
-                          {service.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isDropdownOpen && (
+                <div className="absolute top-[90%] right-0 w-72 bg-white shadow-xl rounded-2xl border border-slate-100 p-2 z-[130]">
+                  {otherServices.map((service) => (
+                    <Link
+                      key={service.name}
+                      href={service.href}
+                      className="flex items-center gap-4 p-4 rounded-xl hover:bg-slate-50 text-slate-700 font-bold transition-colors"
+                    >
+                      {service.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* ACTIONS & BURGER BUTTON */}
+          {/* BURGER BUTTON - Reactivité instantanée */}
           <div className="flex items-center gap-4">
             <Link 
               href="/contact"
-              className="hidden lg:flex items-center gap-2 bg-brand-blue text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-brand-blue/20 hover:bg-brand-orange hover:-translate-y-0.5 transition-all text-sm uppercase"
+              className="hidden lg:flex bg-brand-blue text-white px-6 py-3 rounded-full font-bold text-sm uppercase"
             >
-              <Phone size={16} />
-              <span>Contact</span>
+              Contact
             </Link>
             
             <button 
-              className="xl:hidden p-2 text-brand-blue bg-slate-50 rounded-xl active:scale-95 transition-transform z-[130] relative"
+              className="xl:hidden p-3 text-brand-blue bg-slate-100 rounded-xl z-[150] touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* MOBILE MENU - Corrigé pour s'afficher correctement */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 top-0 left-0 w-full h-screen bg-white z-[110] xl:hidden pt-24"
-          >
-            <div className="h-full overflow-y-auto p-6 flex flex-col gap-2 pb-32">
-              <MobileNavLink href="/">Accueil</MobileNavLink>
-              <MobileNavLink href="/apropos">À Propos</MobileNavLink>
-              <MobileNavLink href="/voyages">Voyages</MobileNavLink>
-              <MobileNavLink href="/assurances">Assurances</MobileNavLink>
-              <MobileNavLink href="/traiteur">Traiteur</MobileNavLink>
-              <MobileNavLink href="/import-export">Import-Export</MobileNavLink>
-              <MobileNavLink href="/blog">Blog</MobileNavLink>
-              
-              <div className="border-b border-slate-100">
-                <button 
-                  onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
-                  className="flex items-center justify-between w-full font-extrabold text-xl text-slate-800 py-5"
-                >
-                  Nos Services + <ChevronDown size={24} className={`transition-transform ${isMobileServicesOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <AnimatePresence>
-                  {isMobileServicesOpen && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden bg-slate-50 rounded-3xl mb-4"
-                    >
-                      <div className="p-5 flex flex-col gap-5">
-                        {otherServices.map((s) => (
-                          <Link key={s.href} href={s.href} className="flex items-center gap-4 text-slate-700 font-bold text-lg">
-                            <span className="p-2 bg-white rounded-lg shadow-sm text-brand-blue">{s.icon}</span>
-                            {s.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+      {/* MOBILE MENU - VERSION SANS ANIMATION POUR VITESSE MAX */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 bg-white z-[140] xl:hidden overflow-y-auto pt-24 pb-10">
+          <div className="p-6 flex flex-col">
+            <MobileNavLink href="/">Accueil</MobileNavLink>
+            <MobileNavLink href="/apropos">À Propos</MobileNavLink>
+            <MobileNavLink href="/voyages">Voyages</MobileNavLink>
+            <MobileNavLink href="/assurances">Assurances</MobileNavLink>
+            <MobileNavLink href="/traiteur">Traiteur</MobileNavLink>
+            <MobileNavLink href="/import-export">Import-Export</MobileNavLink>
+            <MobileNavLink href="/blog">Blog</MobileNavLink>
+            
+            <button 
+              onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
+              className="flex items-center justify-between w-full font-black text-xl text-slate-900 py-5 border-b border-slate-100"
+            >
+              NOS SERVICES + <ChevronDown size={24} className={isMobileServicesOpen ? 'rotate-180' : ''} />
+            </button>
+            
+            {isMobileServicesOpen && (
+              <div className="bg-slate-50 p-4 flex flex-col gap-4">
+                {otherServices.map((s) => (
+                  <Link key={s.href} href={s.href} className="text-slate-700 font-bold text-lg">
+                    {s.name}
+                  </Link>
+                ))}
               </div>
+            )}
 
-              <Link 
-                href="/contact" 
-                className="mt-8 bg-brand-blue text-white p-5 rounded-2xl text-center font-bold text-lg shadow-xl shadow-brand-blue/30"
-              >
-                Parlons de votre projet
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Link 
+              href="/contact" 
+              className="mt-10 bg-brand-blue text-white p-5 rounded-xl text-center font-black text-lg"
+            >
+              CONTACTER L'AGENCE
+            </Link>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="relative group font-bold text-slate-700 hover:text-brand-blue transition-colors text-sm uppercase tracking-wide">
+    <Link href={href} className="font-bold text-slate-700 hover:text-brand-blue text-sm uppercase tracking-wide transition-colors">
       {children}
-      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover:w-full" />
     </Link>
   );
 }
@@ -204,7 +166,7 @@ function MobileNavLink({ href, children }: { href: string; children: React.React
   return (
     <Link 
       href={href} 
-      className="font-extrabold text-xl text-slate-800 py-5 border-b border-slate-100 hover:text-brand-blue transition-colors flex items-center justify-between group"
+      className="font-black text-xl text-slate-900 py-5 border-b border-slate-100 flex items-center justify-between"
     >
       {children}
       <span className="text-brand-orange">→</span>

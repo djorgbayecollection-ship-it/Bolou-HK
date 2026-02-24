@@ -7,6 +7,10 @@ import {
 import Link from "next/link";
 import AdDisplay from "@/components/ui/AdDisplay";
 
+// AJOUT DES COMPOSANTS SUPPRIMÉS DU LAYOUT
+import Partners from "@/components/layout/Partners";
+import Testimonials from "@/components/layout/Testimonials";
+
 const services = [
   {
     title: "Tourisme & Voyage",
@@ -100,7 +104,6 @@ export default function HomePage() {
               <span className="text-slate-900 font-bold"> Logistique</span>.
             </p>
             
-            {/* ESPACE PUB VERTICAL DANS LE HERO (Optionnel) */}
             <div className="hidden lg:block w-48 shrink-0">
                <AdDisplay type="vertical" />
             </div>
@@ -167,12 +170,18 @@ export default function HomePage() {
         <AdDisplay type="horizontal" />
       </div>
 
+      {/* --- PARTNERS SECTION (DÉPLACÉ ICI) --- */}
+      <Partners />
+
+      {/* --- TESTIMONIALS SECTION (DÉPLACÉ ICI) --- */}
+      <Testimonials />
+
       {/* --- SECTION INFÉRIEURE (CTA) --- */}
       <motion.div 
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="max-w-7xl mx-auto mt-10 mb-10 flex flex-col md:flex-row items-center justify-between p-12 rounded-[3.5rem] bg-slate-950 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10"
+        className="max-w-7xl mx-auto mt-20 mb-10 flex flex-col md:flex-row items-center justify-between p-12 rounded-[3.5rem] bg-slate-950 text-white relative overflow-hidden shadow-2xl shadow-blue-900/10"
       >
         <div className="relative z-10 mb-8 md:mb-0 text-center md:text-left">
           <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
@@ -185,7 +194,7 @@ export default function HomePage() {
         </div>
         
         <Link href="/contact" className="group relative z-10 bg-white text-slate-950 px-12 py-6 rounded-3xl font-black uppercase italic tracking-widest transition-all duration-300 hover:bg-orange-500 hover:text-white shadow-xl hover:-translate-y-2">
-           Démarrer l'aventure
+           Démarrez l'aventure
         </Link>
         
         <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full" />

@@ -69,7 +69,7 @@ export default function ContactPage() {
               icon={<Mail className="text-orange-500" />} 
               title="Email Direct" 
               value="info@bolouhk.com" 
-              sub="Réponse sous 24h"
+              sub="Réponse instantannée"
             />
             <ContactInfo 
               icon={<MapPin className="text-orange-500" />} 

@@ -17,10 +17,21 @@ export default function PartnerList() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {partners.map(p => (
-        <div key={p.id} className="p-4 bg-white rounded-2xl border border-slate-100 relative group text-center">
-          <img src={p.logoUrl} alt="" className="h-10 mx-auto mb-2 object-contain" />
-          <p className="text-[10px] font-bold uppercase truncate">{p.name}</p>
-          <button onClick={() => confirm("Supprimer ?") && deleteDoc(doc(db, "partners", p.id))} className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100"><Trash2 size={14}/></button>
+        <div key={p.id} className="p-4 bg-white rounded-2xl border border-slate-100 relative group text-center shadow-sm hover:shadow-md transition-shadow">
+          {/* Suppression de tout filtre "grayscale" et ajout de "filter-none" par sécurité */}
+          <img 
+            src={p.logoUrl} 
+            alt={p.name} 
+            className="h-12 mx-auto mb-2 object-contain grayscale-0 filter-none" 
+          />
+          <p className="text-[10px] font-bold uppercase truncate text-slate-600">{p.name}</p>
+          
+          <button 
+            onClick={() => confirm("Supprimer ce partenaire ?") && deleteDoc(doc(db, "partners", p.id))} 
+            className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg transition-all"
+          >
+            <Trash2 size={16}/>
+          </button>
         </div>
       ))}
     </div>

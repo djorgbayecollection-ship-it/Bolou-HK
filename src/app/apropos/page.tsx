@@ -106,7 +106,7 @@ export default function AproposPage() {
               name="Hermann Bolou"
               role="CEO, Founder"
               img="/team/hermann.jpg"
-              desc="Visionnaire et passionné par l'innovation logistique."
+              desc="Visionnaire, passionné par l'innovation et l'excellence opérationnelle"
             />
             <TeamCard 
               name="Karole Bolou"
@@ -122,7 +122,7 @@ export default function AproposPage() {
             />
             <TeamCard 
               name="Amos De vincy"
-              role="IT & Digital"
+              role="IT & Dev web et mobile"
               img="/team/amos.jpg"
               desc="Architecte de nos solutions digitales et de notre croissance."
             />

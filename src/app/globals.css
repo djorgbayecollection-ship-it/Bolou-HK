@@ -73,6 +73,7 @@
     /* Évite l'effet de surbrillance gris au clic sur mobile */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    
   }
 }
 

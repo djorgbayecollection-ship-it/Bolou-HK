@@ -23,9 +23,8 @@ export default function Partners() {
 
   if (loading || partners.length === 0) return null;
 
-  // Astuce : On répète la liste pour qu'il y ait assez d'éléments pour défiler
-  // Même si tu n'as qu'un seul logo, il en affichera 12 à la suite
-  const displayList = [...partners, ...partners, ...partners, ...partners, ...partners, ...partners, ...partners, ...partners];
+  // On répète la liste pour le défilement infini
+  const displayList = [...partners, ...partners, ...partners, ...partners, ...partners, ...partners];
 
   return (
     <section className="py-12 bg-white border-y border-slate-50 relative z-20">
@@ -44,9 +43,9 @@ export default function Partners() {
       <div className="relative w-full overflow-hidden h-16 flex items-center">
         <motion.div 
           className="flex whitespace-nowrap gap-12 md:gap-24 px-12"
-          animate={{ x: [0, -1000] }} // On force un mouvement horizontal simple
+          animate={{ x: [0, -1500] }} 
           transition={{ 
-            duration: 30, 
+            duration: 40, 
             repeat: Infinity, 
             ease: "linear" 
           }}
@@ -59,13 +58,14 @@ export default function Partners() {
               <img 
                 src={partner.logoUrl} 
                 alt={partner.name} 
-                className="h-8 md:h-10 w-auto grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500 object-contain"
+                /* CORRECTION ICI : suppression de grayscale et opacity-40 */
+                className="h-8 md:h-12 w-auto grayscale-0 opacity-100 transition-transform duration-300 hover:scale-110 object-contain"
               />
             </div>
           ))}
         </motion.div>
 
-        {/* Masques de dégradé pour la finition */}
+        {/* Masques de dégradé pour les bords */}
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10" />
       </div>
