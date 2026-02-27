@@ -6,13 +6,15 @@ export default function PageTransition({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   return (
-    <AnimatePresence mode="wait">
+    /* On change "wait" par "popLayout" ou on le retire pour plus de réactivité */
+    <AnimatePresence mode="popLayout"> 
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        /* Duration à 0.2s : c'est le "sweet spot" pour la sensation de vitesse */
+        transition={{ duration: 0.2, ease: "linear" }}
       >
         {children}
       </motion.div>

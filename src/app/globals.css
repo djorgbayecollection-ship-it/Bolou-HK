@@ -96,6 +96,10 @@
     .text-outline {
       -webkit-text-stroke: 1.5px var(--color-brand-orange);
     }
+    .animated-bg-container { /* Remplace par la classe de ton background */
+    transform: translateZ(0); /* Force l'accélération matérielle */
+    will-change: transform;
+  }
   }
 
   .no-scrollbar::-webkit-scrollbar {
