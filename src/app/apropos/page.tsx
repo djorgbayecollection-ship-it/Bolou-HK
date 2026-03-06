@@ -117,7 +117,7 @@ export default function AproposPage() {
             <TeamCard 
               name="Syriak Setchy"
               role="Assistante Commerciale"
-              img="/team/syriak.jpg"
+              img="/team/setchy.jpeg"
               desc="Le pilier de notre réactivité commerciale au quotidien."
             />
             <TeamCard 
@@ -129,7 +129,7 @@ export default function AproposPage() {
             <TeamCard 
               name="Kanko Assietou"
               role="Resp Call Center"
-              img="/team/assietou.jpg"
+              img="/team/kanko.png"
               desc="Le pilier de notre réactivité commerciale au quotidien."
             />
           </div>

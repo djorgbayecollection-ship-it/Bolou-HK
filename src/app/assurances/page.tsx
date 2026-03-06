@@ -1,7 +1,9 @@
 // app/assurances/page.tsx
+import type { Metadata } from "next"; // Importation du type
 import AssuranceClient from "./AssuranceClient";
 
-export const metadata = {
+// Ajout du type : Metadata
+export const metadata: Metadata = {
   title: "Assurance Auto & Vie en Côte d'Ivoire | BOLOU-HK",
   description: "Obtenez votre assurance auto, vie et habitation en Côte d'Ivoire en 30 minutes. Attestation livrée en ligne. Devis gratuit – BOLOU-HK GROUP.",
   keywords: [
@@ -11,6 +13,7 @@ export const metadata = {
     "courtier assurance Abidjan",
     "assurance habitation Abidjan",
   ],
+  // Utilisation de 'other' pour les balises geo (c'est correct)
   other: {
     'geo.region': 'CI',
     'geo.placename': "Abidjan, Côte d'Ivoire",
@@ -22,7 +25,11 @@ export const metadata = {
     description: "Devis gratuit en 2 minutes. Attestation en ligne.",
     url: 'https://bolouhk.com/assurances',
     siteName: 'BOLOU-HK GROUP',
-    images: [{ url: 'https://res.cloudinary.com/dkjqh8snc/image/upload/v1772543472/logo_bzqyz4.pngg', width: 1200, height: 630 }],
+    images: [{ 
+      url: 'https://res.cloudinary.com/dkjqh8snc/image/upload/v1772543472/logo_bzqyz4.png', // J'ai corrigé le .pngg en .png
+      width: 1200, 
+      height: 630 
+    }],
     locale: 'fr_CI',
     type: 'website',
   },
