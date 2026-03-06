@@ -100,6 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="space-y-1">
               <AdminNavLink href="/admin/newsletter" active={pathname === "/admin/newsletter"} icon={<Mail size={18} />} label="Base Newsletter" />
               <AdminNavLink href="/admin/publicities" active={pathname === "/admin/publicities"} icon={<Layout size={18} />} label="Espaces Pubs" />
+              <AdminNavLink href="/admin/blog" active={pathname === "/admin/blog"} icon={<Mail size={18} />} label="Blog" />
             </div>
           </div>
 

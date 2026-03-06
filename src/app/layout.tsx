@@ -10,7 +10,7 @@ import Navbar from "@/components/layout/Navbar";
 import { ServiceProvider } from "@/context/ServiceContext"; 
 import PageTransition from "@/components/layout/PageTransition";
 
-// ON CHARGE LES COMPOSANTS LOURDS DE MANIÈRE DYNAMIQUE (Uniquement quand c'est nécessaire)
+// ON CHARGE LES COMPOSANTS LOURDS DE MANIÈRE DYNAMIQUE
 const AnimatedBackground = dynamic(() => import("@/components/ui/AnimatedBackground"), { ssr: false });
 const WhatsAppBubble = dynamic(() => import("@/components/ui/WhatsAppBubble"), { ssr: false });
 const NewsletterPopup = dynamic(() => import("@/components/ui/NewsletterPopup"), { ssr: false });
@@ -20,7 +20,7 @@ const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"], display: 'swap' });
 
-// Tracker optimisé (ne bloque plus le thread principal)
+// Tracker optimisé
 function VisitorTracker() {
   const pathname = usePathname();
   useEffect(() => {
@@ -43,7 +43,7 @@ function VisitorTracker() {
           sessionStorage.setItem("bolou_tracked", "true");
         } catch (e) { console.error(e); }
       }
-    }, 4000); // On attend 4 secondes
+    }, 4000);
     return () => clearTimeout(timer);
   }, [pathname]);
   return null;
@@ -52,9 +52,13 @@ function VisitorTracker() {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin") || pathname?.startsWith("/login");
+  
+  // --- AJOUT : DÉTECTION DE LA PAGE ASSURANCES ---
+  // Remplace "/assurances" par l'URL exacte de ta page si nécessaire
+  const isAssurancePage = pathname === "/assurances";
+
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // On attend que le premier rendu soit fait pour débloquer les widgets lourds
   useEffect(() => {
     setIsLoaded(true);
   }, []);
@@ -65,7 +69,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ServiceProvider>
           <VisitorTracker />
           
-          {/* Background chargé uniquement si pas admin et avec une priorité basse */}
           {!isAdminPage && <AnimatedBackground />}
           
           <div className="relative flex flex-col flex-1 w-full overflow-x-hidden">
@@ -77,17 +80,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </PageTransition>
             </main>
 
-            {/* Footer chargé dynamiquement */}
             {!isAdminPage && <Footer />}
           </div>
 
-          {/* Widgets chargés uniquement APRÈS le chargement initial pour libérer le burger */}
           {isLoaded && !isAdminPage && (
             <>
               <Suspense fallback={null}>
                 <NewsletterPopup />
                 <ServiceModal key="main-service-modal" />
-                <WhatsAppBubble />
+                
+                {/* MODIFICATION ICI : On n'affiche WhatsApp que si ce n'est PAS la page assurance */}
+                {!isAssurancePage && <WhatsAppBubble />}
+                
                 <CookieBanner />
               </Suspense>
             </>
